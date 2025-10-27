@@ -1,8 +1,8 @@
 % SICStus PROLOG: definicoes iniciais
 :- dynamic paciente/4. 
 :- dynamic consulta/7.
-:- dynamic condicao/3.
-:- dynamic financeiro/4.
+:- dynamic condicao/3. % não precisamos (acho eu)
+:- dynamic financeiro/4. % não precisamos (acho eu)
 :- dynamic '-'/1.
 :- op( 900,xfy,'::' ).
 
@@ -117,4 +117,5 @@ si_disjuncao(Q1, Q2, Resultado) :-
     tabela_disjuncao(R1, R2, Resultado).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+
 % ...
