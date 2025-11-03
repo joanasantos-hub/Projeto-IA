@@ -144,7 +144,7 @@ sic(Q1 ou Q2, R) :-
     dijuncao(R1, R2, R). 
     
 dijuncao(C1, C2, (C1 ou C2)).
-
+GERETRUDES- LEONOR
 siR(Q1 ou Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
@@ -174,5 +174,6 @@ oor( falso,falso,falso ).
 
 gertrudes
 % ...
+
 
 
