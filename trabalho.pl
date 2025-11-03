@@ -77,8 +77,8 @@ excecao( consulta(c2, 05-02-2025, p2, 23, 90, 130, X)):-
     X =< 85.
     
 %id do paciente desconhecido mas está entre duas possibilidades
-exceção( consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
-exceção( consulta(c10, 02-03-2025, p11, 21, 70, 115, 70).
+excecao( consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
+excecao( consulta(c10, 02-03-2025, p11, 21, 70, 115, 70).
 
 %Conhecimento Imperfeito Interdito -----------------------------
 %pulsação do paciente interdita
@@ -355,6 +355,7 @@ oor( falso,falso,falso ).
 # Não podemos usar !
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+
 
 
 
