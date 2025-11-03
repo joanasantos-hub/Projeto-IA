@@ -99,17 +99,17 @@ tabela_c(falso, desconhecido, falso).
 tabela_c(desconhecido, falso, falso).
 tabela_c(desconhecido, desconhecido, desconhecido).
 
-%Nossa---------------------------------------------------------------
+% Nossa---------------------------------------------------------------
 si_conjuncao(Q1, Q2, Resultado) :-
     si(Q1, R1),
     si(Q2, R2),
-    tabela(R1, R2, Resultado). 
+    tabela_c(R1, R2, Resultado). 
  
-%Stor---------------------------------------------------------------   
-sic(Q1 e Q2, R) :-
-    sic(Q1, R1),
-    sic(Q2, R2),
-    conjuncaoo(R1, R2, R). 
+% Stor---------------------------------------------------------------   
+si_conjuncao2(Q1 e Q2, R) :-
+    si_conjuncao2(Q1, R1),
+    si_conjuncao2(Q2, R2),
+    conjuncao(R1, R2, R).
  
 conjuncao(C1, C2, (C1 e C2)).
 
@@ -138,13 +138,13 @@ si_disjuncao(Q1, Q2, Resultado) :-
     tabela_disjuncao(R1, R2, Resultado).
 
 %Stor---------------------------------------------------------------   
-sic(Q1 ou Q2, R) :-
-    sic(Q1, R1),
-    sic(Q2, R2),
+si_disjuncao2(Q1 ou Q2, R) :-
+    si_disjuncao2(Q1, R1),
+    si_disjuncao2(Q2, R2),
     dijuncao(R1, R2, R). 
     
 dijuncao(C1, C2, (C1 ou C2)).
-GERETRUDES- LEONOR
+
 siR(Q1 ou Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
@@ -171,9 +171,11 @@ oor( desconhecido,Valor,desconhecido ) :- !.
 oor( Valor,desconhecido,desconhecido ).
 oor( falso,falso,falso ).
 
+# Explicar o siR e o que é o CR1 e CR2
+# Como funciona siC (como vai buscar as tabelas?)
+# Não podemos usar !
 
-gertrudes
-% ...
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 
 
 
