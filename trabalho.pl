@@ -171,5 +171,8 @@ oor( desconhecido,Valor,desconhecido ) :- !.
 oor( Valor,desconhecido,desconhecido ).
 oor( falso,falso,falso ).
 
+
+gertrudes
 % ...
+
 
