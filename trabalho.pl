@@ -86,7 +86,7 @@ v_para_f(Termo) :-
 
 % F -> V : torna verdadeiro algo que era falso
 f_para_v(Termo) :-
-    retract(-(Termo)),           % Retira o falso
+    retract(-Termo),             % Retira o falso
     assert(Termo).               % Insere o verdadeiro
     
 % V -> D : torna desconhecido algo que era verdadeiro
@@ -235,6 +235,7 @@ oor( falso,falso,falso ).
 # Não podemos usar !
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+
 
 
 
