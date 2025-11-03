@@ -71,6 +71,65 @@ remocao(Termo) :- retract(Termo).
 remocao(Termo) :- assert(Termo),!, fail.
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Transições de conhecimento: V->F, F->V ...
+
+% Operador =.. -> univ -> converter um termo composto numa lista
+% Termo → Lista
+% Lista → Termo
+% paciente(p1, 'Ana', 38) =.. L. -> L = [paciente, p1, 'Ana', 38].
+% T =.. [paciente, p1, 'Ana', 38]. -> T = paciente(p1, 'Ana', 38).
+
+% V -> F : torna falso algo que era verdadeiro
+v_para_f(Termo) :-
+    retract(Termo),              % Retira o Termo verdadeiro
+    assert(-Termo).              % Insere o falso
+
+% F -> V : torna verdadeiro algo que era falso
+f_para_v(Termo) :-
+    retract(-(Termo)),           % Retira o falso
+    assert(Termo).               % Insere o verdadeiro
+    
+% V -> D : torna desconhecido algo que era verdadeiro
+v_para_d(Termo,P,ValorDesconhecido) :-
+    Termo =.. [Pred | Args],                                 % Decompõe o termo em lista de argumentos -> paciente(p1,'Ana',...,'Rua') → [paciente,p1,'Ana',...,'Rua']
+    substitui(P,Args,ValorDesconhecido,NovosArgs),           % Substitui o argumento na posição P por ValorDesconhecido -> substitui(P,Args,ValorDesconhecido,NovosArgs)
+    NovoTermo =.. [Pred | NovoArgs],                         % Reconstrói o novo termo com o ValorDesconhecido
+    retract(Termo),                                          % Retira o verdadeiro
+    assert(excecao(NovoTermo)).                              % Adiciona o novo facto como exceção
+
+% D -> V : torna verdadeiro algo que era desconhecido
+d_para_v(Excecao,P,Valor) :-
+    Excecao = excecao(Termo),
+    Termo =.. [Pred | Args],
+    substitui(P,Args,Valor,NovosArgs),
+    NovoTermo =.. [Pred | NovosArgs],
+    retract(Excecao),
+    assert(NovoTermo).
+
+% D -> F : torna falso algo que era desconhecido
+d_para_f(Excecao,P,Valor) :-
+    Excecao = excecao(Termo),
+    Termo =.. [Pred | Args],
+    substitui(P,Args,Valor,NovosArgs),
+    NovoTermo =.. [Pred | NovosArgs],
+    retract(Excecao),
+    assert(-NovoTermo).
+
+% F -> D : torna desconhecido algo que era falso
+f_para_d(Termo,P,ValorDesconhecido) :-
+    Termo =.. [Pred | Args],
+    substitui(P,Args,ValorDesconhecido,NovosArgs),
+    NovoTermo =.. [Pred | NovosArgs],
+    retract(-Termo),
+    assert(excecao(NovoTermo)).
+
+substitui(1, [_|T], X, [X|T]).      % Se for na posição 1, substitui logo
+substitui(N, [H|T], X, [H|R]) :-    % Se for noutra posição...
+    N > 1,
+    N1 is N - 1,
+    substitui(N1, T, X, R).         % Retorna N1, a Tail, o Valor (desconhecido ou não) e o Resulado até N ser 1 e poder substituir na posição certa
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do meta-predicado nao: Questao -> {V,F}
 nao(Questao):- 
         Questao, !, fail.
@@ -176,6 +235,7 @@ oor( falso,falso,falso ).
 # Não podemos usar !
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+
 
 
 
