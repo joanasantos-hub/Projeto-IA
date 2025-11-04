@@ -21,7 +21,7 @@ paciente(p4, 'Miguel Fernandes', 20-07-1978, 47, masculino, '8 Travessa do Sol')
 paciente(p5, 'Rita Sousa', 11-12-1992, 32, feminino, '14 Rua das Amendoeiras').
 paciente(p8, 'Anabela Martins', 01-05-2005, 20, feminino, '22 Rua da Pedreira').
 paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua doss Chãos').
-paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente')).
+paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente').
 
 % Conhecimento Imperfeito Incerto-----------------------------
 %morada do paciente desconhecida
@@ -77,8 +77,8 @@ excecao( consulta(c2, 05-02-2025, p2, 23, 90, 130, X)):-
     X =< 85.
     
 %id do paciente desconhecido mas está entre duas possibilidades
-excecao( consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
-excecao( consulta(c10, 02-03-2025, p11, 21, 70, 115, 70).
+excecao( consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
+excecao( consulta(c10, 02-03-2025, p11, 21, 70, 115, 70)).
 
 %Conhecimento Imperfeito Interdito -----------------------------
 %pulsação do paciente interdita
@@ -402,6 +402,148 @@ oor( falso,falso,falso ).
 # Não podemos usar !
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Relatar 
+
+% Paciente
+% Extensão do predicado nomePaciente: N, R -> {V,F}
+nomePaciente(N, R) :-
+    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+
+% Extensão do predicado idPaciente: Id, R -> {V,F}
+idPaciente(Id, R) :-
+    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+
+% Extensão do predicado sexoPaciente: S, R -> {V,F}
+sexoPaciente(S, R) :-
+    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+
+% Extensão do predicado numeroPacientes: R -> {V,F}
+numeroPacientes(R) :-
+    findall(Id, paciente(Id, _, _, _, _, _), L),
+    comprimento(L, R).
+
+% Extensão do predicado pacientesFaixaEtaria: Inf, Sup, R -> {V,F}
+pacientesFaixaEtaria(Inf, Sup, R) :-
+    findall(I, (consulta(_, _, _, I, _, _, _), I >= Inf, I =< Sup), L),
+    comprimento(L, R).
+
+
+% Consulta
+
+% Extensão do predicado idConsulta: IdC, R -> {V,F}
+idConsulta(IdC, R) :-
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+
+% Extensão do predicado idPacienteConsulta: IdP, R -> {V,F}
+idPacienteConsulta(IdP, R) :-
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+
+% Extensão do predicado dataConsulta: D, R -> {V,F}
+dataConsulta(D, R) :-
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+
+% Extensão do predicado numeroConsultas: R -> {V,F}
+numeroConsultas(R) :-
+    findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
+    comprimento(L, R).
+
+% Extensão do predicado mediaPulsacao: M -> {V,F}
+mediaPulsacao(M) :-
+    findall(Pul, (consulta(_, _, _, _, _, _, Pul), number(Pul)), L),
+    somaLista(L, Soma),
+    comprimento(L, N),
+    N > 0,
+    M is Soma / N.
+
+
+% Tensão Arterial
+
+% Extensão do predicado taPaciente: IdP, R -> {V,F}
+taPaciente(IdP, R) :-
+    findall((IdT, C, IdP, SI, SS, DI, DS), ta(IdT, C, IdP, SI, SS, DI, DS), R).
+
+% Extensão do predicado taClassificacao: C, R -> {V,F}
+taClassificacao(C, R) :-
+    findall((IdT, C, IdP, SI, SS, DI, DS), ta(IdT, C, IdP, SI, SS, DI, DS), R).
+
+% Extensão do predicado numeroTA: R -> {V,F}
+numeroTA(R) :-
+    findall(IdT, ta(IdT, _, _, _, _, _, _), L),
+    comprimento(L, R).
+
+% Extensão do predicado mediaSistolica: M -> {V,F}
+mediaSistolica(M) :-
+    findall(SS, (ta(_, _, _, _, SS, _, _), number(SS)), L),
+    somaLista(L, Soma),
+    comprimento(L, N),
+    N > 0,
+    M is Soma / N.
+
+% Extensão do predicado mediaDiastolica: M -> {V,F}
+mediaDiastolica(M) :-
+    findall(DS, (ta(_, _, _, _, _, _, DS), number(DS)), L),
+    somaLista(L, Soma),
+    comprimento(L, N),
+    N > 0,
+    M is Soma / N.
+
+% Extensão do predicado pacientesHipertensos: R -> {V,F}
+pacientesHipertensos(R) :-
+    findall(IdP, (ta(_, _, IdP, _, SS, _, _), SS >= 140), L),
+    sort(L, R).  % remove duplicados
+
+
+% Mendicamento
+
+% Extensão do predicado medicamentoPaciente: IdP, R -> {V,F}
+medicamentoPaciente(IdP, R) :-
+    findall((IdP, M, D), medicamento(IdP, M, D), R).
+
+% Extensão do predicado pacientesMedicamento: M, R -> {V,F}
+pacientesMedicamento(M, R) :-
+    findall((IdP, M, D), medicamento(IdP, M, D), R).
+
+% Extensão do predicado numeroMedicados: R -> {V,F}
+numeroMedicados(R) :-
+    findall(IdP, medicamento(IdP, _, _), L),
+    comprimento(L, R).
+
+
+% Predicados auxiliares
+somaLista([], 0).
+somaLista([H|T], R) :-
+    somaLista(T, X),
+    R is H + X.
+
+% comprimento(Lista, N) já deve estar definido no teu código base???
+
+
+% Estatísticas gerais
+
+estatisticasSistema :-
+    numeroPacientes(NPac),
+    numeroConsultas(NCons),
+    numeroTA(NTA),
+    numeroMedicados(NMed),
+    mediaSistolica(MSis),
+    mediaDiastolica(MDias),
+    mediaPulsacao(MPul),
+    pacientesHipertensos(Hip),
+    comprimento(Hip, NumHip),
+
+    nl, write('===== ESTATÍSTICAS DO SISTEMA ====='), nl, nl,
+    write('Número total de pacientes: '), write(NPac), nl,
+    write('Número total de consultas: '), write(NCons), nl,
+    write('Número total de registos de tensão arterial: '), write(NTA), nl,
+    write('Número total de pacientes medicados: '), write(NMed), nl, nl,
+    write('Média sistólica: '), write(MSis), nl,
+    write('Média diastólica: '), write(MDias), nl,
+    write('Média de pulsação: '), write(MPul), nl, nl,
+    write('Pacientes hipertensos: '), write(Hip), nl,
+    write('Número de pacientes hipertensos: '), write(NumHip), nl,
+    nl, write('==================================='), nl.
+
+
 
 
 
