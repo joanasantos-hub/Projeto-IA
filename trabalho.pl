@@ -191,7 +191,6 @@ evolucao(Termo):-
 insercao(Termo) :- assert(Termo).
 insercao(Termo) :- retract(Termo),!, fail.
 
-
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado que permite a involucao do conhecimento: Termo -> {V,F}
 involucao(Termo):-
@@ -202,53 +201,53 @@ involucao(Termo):-
 remocao(Termo) :- retract(Termo).
 remocao(Termo) :- assert(Termo),!, fail.
 
-
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Invariantes
+
 % Não pode existir mais do que um registo do mesmo paciente
-+paciente(Id, N, D, I, S, M) ::(findall(Id, paciente(Id, _, _, _, _, _), L),length(L, X),X == 1).
++paciente(Id, N, D, I, S, M)::(findall(Id, paciente(Id, _, _, _, _, _), L),length(L, X),X == 1).
 
 % Não pode existir mais do que um registo da mesma consulta
-+consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdC, consulta(IdC, _, _, _, _, _, _), L),length(L, X),X == 1).
++consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdC, consulta(IdC, _, _, _, _, _, _), L),length(L, X),X == 1).
 
 % Não pode existir mais do que um registo da mesma tensão arterial
-+ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdTA, ta(IdTA, _, _, _, _, _, _), L),length(L, X),X == 1).
++ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdTA, ta(IdTA, _, _, _, _, _, _), L),length(L, X),X == 1).
 
 % Não pode existir mais do que um registo do mesmo medicamento (por Id do paciente)
-+medicamento(IdP, M, D) ::(findall(IdP, medicamento(IdP, _, _), L),length(L, X),X == 1).
++medicamento(IdP, M, D)::(findall(IdP, medicamento(IdP, _, _), L),length(L, X),X == 1).
 
 % Não pode ser registada uma consulta para um paciente inexistente
-+consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
++consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
 % Não pode ser registada uma tensão arterial para um paciente inexistente
-+ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
++ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
 % Não pode ser registado um medicamento para um paciente inexistente
-+medicamento(IdP, M, D) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
++medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
 % Não pode ser removido um paciente que tenha consultas associadas
--paciente(Id, N, D, I, S, M) ::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
+-paciente(Id, N, D, I, S, M)::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um paciente que tenha tensões arteriais associadas
--paciente(Id, N, D, I, S, M) ::(findall(IdTA, ta(IdTA, _, Id, _, _, _, _), L),length(L, X),X == 0).
+-paciente(Id, N, D, I, S, M)::(findall(IdTA, ta(IdTA, _, Id, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um paciente que tenha medicação associada
--paciente(Id, N, D, I, S, M) ::(findall(Med, medicamento(Id, Med, _), L),length(L, X),X == 0).
+-paciente(Id, N, D, I, S, M)::(findall(Med, medicamento(Id, Med, _), L),length(L, X),X == 0).
 
 % Não pode ser removida uma consulta se o paciente ainda existir
--consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+-consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removida uma tensão arterial se o paciente ainda existir
--ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+-ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um medicamento se o paciente ainda existir
--medicamento(IdP, M, D) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+-medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % Um paciente não pode ter duas tensões arteriais com o mesmo tipo de classificação
-+ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(C, ta(_, C, IdP, _, _, _, _), L),length(L, X),X == 1).
++ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(C, ta(_, C, IdP, _, _, _, _), L),length(L, X),X == 1).
 
 % Um paciente não pode ter dois registos de medicamento idênticos
-+medicamento(IdP, M, D) ::(findall(M, medicamento(IdP, M, _), L),length(L, X),X == 1).
++medicamento(IdP, M, D)::(findall(M, medicamento(IdP, M, _), L),length(L, X),X == 1).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Transições de conhecimento: V->F, F->V ...
@@ -271,11 +270,11 @@ f_para_v(Termo) :-
     
 % V -> D : torna desconhecido algo que era verdadeiro
 v_para_d(Termo,P,ValorDesconhecido) :-
-    Termo =.. [Pred | Args],                                 % Decompõe o termo em lista de argumentos -> paciente(p1,'Ana',...,'Rua') → [paciente,p1,'Ana',...,'Rua']
-    substitui(P,Args,ValorDesconhecido,NovosArgs),           % Substitui o argumento na posição P por ValorDesconhecido -> substitui(P,Args,ValorDesconhecido,NovosArgs)
-    NovoTermo =.. [Pred | NovoArgs],                         % Reconstrói o novo termo com o ValorDesconhecido
-    retract(Termo),                                          % Retira o verdadeiro
-    assert(excecao(NovoTermo)).                              % Adiciona o novo facto como exceção
+    Termo =.. [Pred | Args],
+    substitui(P,Args,ValorDesconhecido,NovosArgs),
+    NovoTermo =.. [Pred | NovoArgs],
+    retract(Termo),
+    assert(excecao(NovoTermo)).
 
 % D -> V : torna verdadeiro algo que era desconhecido
 d_para_v(Excecao,P,Valor) :-
@@ -417,7 +416,8 @@ oor( falso,falso,falso ).
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Relatar 
 
-% Paciente
+% Paciente - - - - - - - - - - - - - - - - - - 
+
 % Extensão do predicado nomePaciente: N, R -> {V,F}
 nomePaciente(N, R) :-
     findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
@@ -441,7 +441,7 @@ pacientesFaixaEtaria(Inf, Sup, R) :-
     comprimento(L, R).
 
 
-% Consulta
+% Consulta - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado idConsulta: IdC, R -> {V,F}
 idConsulta(IdC, R) :-
@@ -469,7 +469,7 @@ mediaPulsacao(M) :-
     M is Soma / N.
 
 
-% Tensão Arterial
+% Tensão Arterial - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado taPaciente: IdP, R -> {V,F}
 taPaciente(IdP, R) :-
@@ -506,7 +506,7 @@ pacientesHipertensos(R) :-
     sort(L, R).  % remove duplicados
 
 
-% Mendicamento
+% Mendicamento - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado medicamentoPaciente: IdP, R -> {V,F}
 medicamentoPaciente(IdP, R) :-
@@ -530,7 +530,7 @@ somaLista([H|T], R) :-
 
 % comprimento(Lista, N) já deve estar definido no teu código base???
 
-
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
 
 estatisticasSistema :-
@@ -555,14 +555,4 @@ estatisticasSistema :-
     write('Pacientes hipertensos: '), write(Hip), nl,
     write('Número de pacientes hipertensos: '), write(NumHip), nl,
     nl, write('==================================='), nl.
-
-
-
-
-
-
-
-
-
-
 
