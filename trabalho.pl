@@ -13,6 +13,7 @@
 :- set_prolog_flag( unknown,fail ).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
 
 paciente(p1, 'Ana Martins', 15-09-1987, 38, feminino, '23 Avenida Central').
@@ -22,7 +23,7 @@ paciente(p4, 'Miguel Fernandes', 20-07-1978, 47, masculino, '8 Travessa do Sol')
 paciente(p5, 'Rita Sousa', 11-12-1992, 32, feminino, '14 Rua das Amendoeiras').
 paciente(p8, 'Anabela Martins', 01-05-2005, 20, feminino, '22 Rua da Pedreira').
 paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua doss Chãos').
-paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente')).
+paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente').
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -80,8 +81,8 @@ excecao(consulta(c2, 05-02-2025, p2, 23, 84, 128, X)):-
     X =< 85.
     
 % O Id do paciente é desconhecido, mas tem duas possibilidades
-excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
-excecao(consulta(c10, 02-03-2025, p11, 21, 70, 115, 70).
+excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
+excecao(consulta(c10, 02-03-2025, p11, 21, 70, 115, 70)).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
 
@@ -173,7 +174,7 @@ excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, medic_interdito, dose_interdita).
 interdito(medic_interdito).
 interdito(dose_interdita).
-+medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms),nao(interdito(Ds))),S ),
++medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms)),nao(interdito(Ds))),S ),
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
@@ -555,4 +556,5 @@ estatisticasSistema :-
     write('Pacientes hipertensos: '), write(Hip), nl,
     write('Número de pacientes hipertensos: '), write(NumHip), nl,
     nl, write('==================================='), nl.
+
 
