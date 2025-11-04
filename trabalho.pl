@@ -14,6 +14,7 @@
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
+
 paciente(p1, 'Ana Martins', 15-09-1987, 38, feminino, '23 Avenida Central').
 paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, '12 Rua das Flores').
 paciente(p3, 'Joana Costa', 03-02-1995, 30, feminino, '5 Largo da Estação').
@@ -21,26 +22,29 @@ paciente(p4, 'Miguel Fernandes', 20-07-1978, 47, masculino, '8 Travessa do Sol')
 paciente(p5, 'Rita Sousa', 11-12-1992, 32, feminino, '14 Rua das Amendoeiras').
 paciente(p8, 'Anabela Martins', 01-05-2005, 20, feminino, '22 Rua da Pedreira').
 paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua doss Chãos').
-paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente').
+paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente')).
 
-% Conhecimento Imperfeito Incerto-----------------------------
-%morada do paciente desconhecida
+% Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
+
+% Morada do paciente desconhecida
 paciente(p6, 'Ana Franco', 13-05-1992, 32, feminino, morada_desconhecida).
 excecao(paciente(Id, N, D, I, S, M)) :-
     paciente(Id, N, D, I, S, morada_desconhecida).
     
-%nome do paciente desconhecida
+% Nome do paciente desconhecida
 paciente(p7, nome_desconhecido, 10-01-1990, 35, masculino, 'Rua do Norte').
 excecao(paciente(Id, N, D, I, S, M)) :-
     paciente(Id, nome_desconhecido, D, I, S, M).
 
-%Conhecimento Imperfeito Impreciso -----------------------------
-%nome do paciente desconhecido entre duas possibilidades
+% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
+% Nome do paciente desconhecido entre duas possibilidades
 excecao(paciente(p10, 'Ana Antunes', 12-07-2004, 21, feminino, '5 Largo da Estação')).
 excecao(paciente(p10, 'Joana Leite', 12-07-2004, 21, feminino, '5 Largo da Estação')).
 
-%Conhecimento Imperfeito Interdito -----------------------------
-%morada do paciente interdita
+%Conhecimento Imperfeito Interdito  - - - - - - - - - - - - - - - - - - 
+
+% Morada do paciente interdita
 paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, morada_interdita).
 excecao( paciente(Id, N, D, I, S, M)) :- 
     paciente(Id, N, D, I, S, morada_interdita).
@@ -48,87 +52,90 @@ interdito(morada_interdita).
 +paciente(Id, N, D, I, S, M) :: (findall( (Id, N, D, I, S, Ms),(paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, Ms),nao(interdito(Ms))),S ),
                   length( S,N ), N == 0).
 
-
-
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastolica, Sistolica, Pulsacao -> {V,F,D}
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
-consulta(c2, 05-02-2025, p2, 23, 90, 130, 80).
-consulta(c3, 10-02-2025, p3, 30, 85, 125, 78).
-consulta(c4, 12-02-2025, p4, 47, 88, 140, 85).
-consulta(c5, 14-02-2025, p5, 32, 76, 118, 72).
+consulta(c3, 10-02-2025, p3, 30, 88, 134, 78).
+consulta(c5, 14-02-2025, p5, 32, 74, 118, 72).
 consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
-consulta(c7, 22-02-2025, p7, 35, 78, 118, 70).
+consulta(c7, 22-02-2025, p7, 35, 87, 133, 70).
 
-% Conhecimento Imperfeito Incerto-----------------------------
-%pressão diastólica desconhecida
-consulta(c8, 14-10-2025, p8, 20, p_diastolica, 118, 76).
+% Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
+
+% Pressão diastólica desconhecida
+consulta(c8, 14-10-2025, p8, 20, p_diastolica, 121, 76).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
     consulta(IdC, D, IdP, I, p_diastolica, S, P).
     
-%pulsação desconhecida
-consulta(c9, 14-03-2025, p9, 21, 80, 118, pulsacao_des).
+% Pulsação desconhecida
+consulta(c9, 14-03-2025, p9, 21, 69, 118, pulsacao_des).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
     consulta(IdC, D, IdP, I, D, S, pulsacao_des).
 
-%Conhecimento Imperfeito Impreciso -----------------------------
-%a pulsação do paciente desconhecida, mas pertence a um intervalo de valores.
-excecao( consulta(c2, 05-02-2025, p2, 23, 90, 130, X)):-
+% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
+% A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
+excecao(consulta(c2, 05-02-2025, p2, 23, 84, 128, X)):-
     X >= 77,
     X =< 85.
     
-%id do paciente desconhecido mas está entre duas possibilidades
-excecao( consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
-excecao( consulta(c10, 02-03-2025, p11, 21, 70, 115, 70)).
+% O Id do paciente é desconhecido, mas tem duas possibilidades
+excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
+excecao(consulta(c10, 02-03-2025, p11, 21, 70, 115, 70).
 
-%Conhecimento Imperfeito Interdito -----------------------------
-%pulsação do paciente interdita
-consulta(c4, 12-02-2025, p4, 47, 88, 140, pulsaca_inter).
+% Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
+
+% Pulsação do paciente interdita
+consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
 excecao( consulta(IdC, D, IdP, I, D, S, P)) :- 
     consulta(IdC, D, IdP, I, D, S, pulsaca_inter).
 interdito(pulsaca_inter).
-+consulta(IdC, D, IdP, I, D, S, P) :: (findall( (IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 88, 140, Ps),nao(interdito(Ps))),S ),
++consulta(IdC, D, IdP, I, D, S, P) :: (findall( (IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps),nao(interdito(Ps))),S ),
                   length( S,N ), N == 0).
 
-
-                  
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado tensao arterial: IdTA, Classifcacao, IdPaciente, Sistolica Inferior, Sistolica Superior, Diastolica Inferior, Diastolica Superior -> {V,F,D}
-% VERIFICAR VALORES QUE É O CHAT QUE DEU E PODE TER PERCEBIDO MAL!!
-ta(ta1, 'Normal-baixa', p1, 85, 110, 55, 75).
-ta(ta2, 'Normal-alta', p2, 120, 129, 75, 84).
-ta(ta3, 'Pré-hipertensão', p3, 130, 139, 85, 89).
-ta(ta4, 'Hipertensão', p4, 140, 159, 90, 99).
-ta(ta7, 'Normal-alta', p7, 120, 129, 75, 84).
-ta(ta8, 'Normal', p8, 90, 120, 60, 80).
-ta(ta9, 'Normal-baixa', p9, 85, 110, 55, 75).
 
-%Conhecimento Imperfeiro Incerto-----------------------------
-ta(ta5, class_desconhecida, p5, 90, 120, 60, 80).
+ta(ta1, 'Normal-baixa', p1, 85, 119, 55, 75).
+ta(ta2, 'Normal', p2, 120, 129, 75, 85).
+ta(ta3, 'Normal-alta', p3, 130, 139, 86, 89).
+ta(ta4, 'Hipertensão', p4, 140, 159, 90, 99).
+ta(ta7, 'Normal-alta', p7, 130, 139, 86, 89).
+ta(ta8, 'Normal', p8, 120, 129, 75, 85).
+ta(ta9, 'Normal-baixa', p9, 85, 119, 55, 75).
+
+% Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
+
+% A Classificação é desconhecida
+ta(ta5, class_desconhecida, p5, 85, 119, 55, 75).
 excecao(ta(IdT, C, IdP, SI, SS, DI, DS)) :-
     ta(IdT, class_desconhecida, IdP, SI, SS, DI, DS).
-    
-ta(ta6, 'Normal', id_pac_desc, 90, 120, 60, 80).
+
+% O Id é desconhecida
+ta(ta6, 'Normal', id_pac_desc, 120, 129, 75, 85).
 excecao(ta(IdT, C, IdP, SI, SS, DI, DS)) :-
     ta(IdT, class_desconhecida, id_pac_desc, SI, SS, DI, DS).
 
-%Conhecimento Imperfeito Impreciso -----------------------------
-exceção( ta(ta11, 'Normal-baixa', p11, X, 120, 55, 75)):-
+% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
+% A Sistolica Inferior pertence a um interavlo de valores
+exceção(ta(ta11, 'Normal-baixa', p11, X, 119, 55, 75)):-
     X >= 80,
     X =< 90.
 
-%Conhecimento Imperfeito Interdito -----------------------------
-%classificação e Sistolica Inferior do paciente interdita
-ta(ta10, class_inter, p10, si_inter, 120, 60, 80).
+% Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
+
+% Classificação do paciente interdita
+ta(ta10, class_inter, p10, 85, 119, 55, 75).
 excecao( ta(IdT, C, IdP, SI, SS, DI, DS)) :- 
-    ta(IdT, class_inter, IdP, si_inter, SS, DI, DS).
+    ta(IdT, class_inter, IdP, SI, SS, DI, DS).
 interdito(class_inter).
-interdito(si_inter).
-+ta(IdT, C, IdP, SI, SS, DI, DS) :: (findall( (IdT, Cs, IdP, SIs, SS, DI, DS),(ta(ta10, Cs, p10, SIs, 120, 60, 80),nao(interdito(Cs),nao(interdito(SIs))),S ),
++ta(IdT, C, IdP, SI, SS, DI, DS) :: (findall( (IdT, Cs, IdP, SI, SS, DI, DS),(ta(ta10, Cs, p10, 85, 119, 55, 75),nao(interdito(Cs))),S ),
                   length( S,N ), N == 0).
 
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -     
+% Extensao do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
 
-
-                  
-% Extensao do predicado tensao arterial: IdP, Medicamento, Dosagem -> {V,F,D}
 medicamento(p2, 'Captopril', '25mg/dia').
 medicamento(p3, 'Losartan', '50mg/dia').
 medicamento(p4, 'Amlodipina', '5mg/dia').
@@ -136,32 +143,38 @@ medicamento(p5, 'Sem medicacao', '---').
 medicamento(p9, 'Hidroclorotiazida', '12.5mg/dia').
 medicamento(p11, 'Perindopril', '4mg/dia').
 
-%Conhecimento Imperfeiro Incerto-----------------------------
+% Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
+
+% O Medicamento é desconhecido
 medicamento(p7, medic_desconhecido,'10mg/dia').
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, medic_desconhecido, D).
 
+% A Dosagem é desconhecida
 medicamento(p6, 'Enalapril', dose_desconhecida).
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, M, dose_desconhecida).
 
-%Conhecimento Imperfeito Impreciso -----------------------------
+% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
+% O Medicamento tem duas possibilidades
 excecao(medicamento(p1, 'Ramipril', '10mg/dia')).
 excecao(medicamento(p1, 'Captopril', '10mg/dia')).
 
+% O Medicamento tem duas possibilidades
 excecao(medicamento(p10, 'Losartan', '50mg/dia')).
 excecao(medicamento(p10, 'Amlodipina', '5mg/dia')).
 
-%Conhecimento Imperfeito Interdito -----------------------------
-%medicamento e dosagem do paciente interdita
+% Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
+
+% Medicamento e dosagem do paciente interditos
 medicamento(p8, medic_interdito, dose_interdita).
 excecao(medicamento(IdP, M, D)) :- 
     medicamento(IdP, medic_interdito, dose_interdita).
 interdito(medic_interdito).
 interdito(dose_interdita).
-+medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms)),nao(interdito(Ds))),S ),
++medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms),nao(interdito(Ds))),S ),
                   length( S,N ), N == 0).
-
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado teste: lista -> {V,F}
@@ -542,6 +555,7 @@ estatisticasSistema :-
     write('Pacientes hipertensos: '), write(Hip), nl,
     write('Número de pacientes hipertensos: '), write(NumHip), nl,
     nl, write('==================================='), nl.
+
 
 
 
