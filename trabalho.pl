@@ -159,9 +159,8 @@ excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, medic_interdito, dose_interdita).
 interdito(medic_interdito).
 interdito(dose_interdita).
-+medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms),nao(interdito(Ds))),S ),
++medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms)),nao(interdito(Ds))),S ),
                   length( S,N ), N == 0).
-
 
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
@@ -189,6 +188,54 @@ involucao(Termo):-
 
 remocao(Termo) :- retract(Termo).
 remocao(Termo) :- assert(Termo),!, fail.
+
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Invariantes
+% Não pode existir mais do que um registo do mesmo paciente
++paciente(Id, N, D, I, S, M) ::(findall(Id, paciente(Id, _, _, _, _, _), L),length(L, X),X == 1).
+
+% Não pode existir mais do que um registo da mesma consulta
++consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdC, consulta(IdC, _, _, _, _, _, _), L),length(L, X),X == 1).
+
+% Não pode existir mais do que um registo da mesma tensão arterial
++ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdTA, ta(IdTA, _, _, _, _, _, _), L),length(L, X),X == 1).
+
+% Não pode existir mais do que um registo do mesmo medicamento (por Id do paciente)
++medicamento(IdP, M, D) ::(findall(IdP, medicamento(IdP, _, _), L),length(L, X),X == 1).
+
+% Não pode ser registada uma consulta para um paciente inexistente
++consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+
+% Não pode ser registada uma tensão arterial para um paciente inexistente
++ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+
+% Não pode ser registado um medicamento para um paciente inexistente
++medicamento(IdP, M, D) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+
+% Não pode ser removido um paciente que tenha consultas associadas
+-paciente(Id, N, D, I, S, M) ::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
+
+% Não pode ser removido um paciente que tenha tensões arteriais associadas
+-paciente(Id, N, D, I, S, M) ::(findall(IdTA, ta(IdTA, _, Id, _, _, _, _), L),length(L, X),X == 0).
+
+% Não pode ser removido um paciente que tenha medicação associada
+-paciente(Id, N, D, I, S, M) ::(findall(Med, medicamento(Id, Med, _), L),length(L, X),X == 0).
+
+% Não pode ser removida uma consulta se o paciente ainda existir
+-consulta(IdC, D, IdP, I, Dia, Sis, Pul) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+
+% Não pode ser removida uma tensão arterial se o paciente ainda existir
+-ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+
+% Não pode ser removido um medicamento se o paciente ainda existir
+-medicamento(IdP, M, D) ::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+
+% Um paciente não pode ter duas tensões arteriais com o mesmo tipo de classificação
++ta(IdTA, C, IdP, SI, SS, DI, DS) ::(findall(C, ta(_, C, IdP, _, _, _, _), L),length(L, X),X == 1).
+
+% Um paciente não pode ter dois registos de medicamento idênticos
++medicamento(IdP, M, D) ::(findall(M, medicamento(IdP, M, _), L),length(L, X),X == 1).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Transições de conhecimento: V->F, F->V ...
@@ -355,6 +402,7 @@ oor( falso,falso,falso ).
 # Não podemos usar !
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+
 
 
 
