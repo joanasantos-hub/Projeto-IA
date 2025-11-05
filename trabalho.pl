@@ -1,10 +1,12 @@
 % SICStus PROLOG: definicoes iniciais
-:- dynamic paciente/4. 
+:- dynamic paciente/6. 
 :- dynamic consulta/7.
-:- dynamic condicao/3. % não precisamos (acho eu)
-:- dynamic financeiro/4. % não precisamos (acho eu)
-:- dynamic '-'/1.
+:- dynamic ta/7.
 :- op( 900,xfy,'::' ).
+:- dynamic '-'/1.
+:- op(500, xfy, e).
+:- op(500, xfy, ou).
+:- use_module(library(listing)).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % SICStus PROLOG: Declaracoes iniciais
@@ -12,7 +14,6 @@
 :- set_prolog_flag( single_var_warnings,off ).
 :- set_prolog_flag( unknown,fail ).
 
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
 
@@ -88,7 +89,7 @@ excecao(consulta(c10, 02-03-2025, p11, 21, 70, 115, 70)).
 
 % Pulsação do paciente interdita
 consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
-excecao( consulta(IdC, D, IdP, I, D, S, P)) :- 
+excecao(consulta(IdC, D, IdP, I, D, S, P)) :- 
     consulta(IdC, D, IdP, I, D, S, pulsaca_inter).
 interdito(pulsaca_inter).
 +consulta(IdC, D, IdP, I, D, S, P) :: (findall( (IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps),nao(interdito(Ps))),S ),
@@ -461,7 +462,6 @@ numeroConsultas(R) :-
     findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
     comprimento(L, R).
 
-
 % Tensão Arterial - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado taPaciente: IdP, R -> {V,F}
@@ -502,7 +502,6 @@ pacientesHipertensos(R) :-
     findall(IdP, ta(_, 'Hipertensão', IdP, _, _, _, _), L),
     sort(L, R).
 
-
 % Mendicamento - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado medicamentoPaciente: IdP, R -> {V,F}
@@ -518,21 +517,17 @@ numeroMedicados(R) :-
     findall(IdP, medicamento(IdP, _, _), L),
     comprimento(L, R).
 
+% Predicado auxiliar - - - - - - - - - - - - - - - - - - 
 
-% Predicados auxiliares
 somaLista([], 0).
 somaLista([H|T], R) :-
     somaLista(T, X),
     R is H + X.
 
-comprimento([], 0).
-comprimento([H|T], R) :-
-    comprimento(T, R1),
-    R is R1 + 1.
-
-
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
+
+% Estatísticas sobre os pacientes - - - - - - - - - - - - - - - - - - 
 estatisticasPacientes :-
     numeroPacientes(NPac),
     numeroConsultas(NCons),
@@ -556,7 +551,7 @@ estatisticasPacientes :-
     write('Pacientes hipertensos: '), write(NumHip), nl, nl,
     write('====================================='), nl.
 
-% Estatísticas sobre medicamentos
+% Estatísticas sobre medicamentos - - - - - - - - - - - - - - - - - - 
 estatisticasMedicamentos :-
     numeroMedicados(NMed),
     findall(M, medicamento(_, M, _), LMed),
@@ -568,10 +563,6 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
-
-
-
-
 
 
 
