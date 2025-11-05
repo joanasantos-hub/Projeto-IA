@@ -461,14 +461,6 @@ numeroConsultas(R) :-
     findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
     comprimento(L, R).
 
-% Extensão do predicado mediaPulsacao: M -> {V,F}
-mediaPulsacao(M) :-
-    findall(Pul, (consulta(_, _, _, _, _, _, Pul), number(Pul)), L),
-    somaLista(L, Soma),
-    comprimento(L, N),
-    N > 0,
-    M is Soma / N.
-
 
 % Tensão Arterial - - - - - - - - - - - - - - - - - - 
 
@@ -556,5 +548,6 @@ estatisticasSistema :-
     write('Pacientes hipertensos: '), write(Hip), nl,
     write('Número de pacientes hipertensos: '), write(NumHip), nl,
     nl, write('==================================='), nl.
+
 
 
