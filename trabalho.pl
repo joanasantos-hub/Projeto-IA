@@ -519,10 +519,11 @@ numeroMedicados(R) :-
 
 % Predicado auxiliar - - - - - - - - - - - - - - - - - - 
 
-somaLista([], 0).
-somaLista([H|T], R) :-
-    somaLista(T, X),
-    R is H + X.
+comprimento([], 0).
+comprimento([_|T], R) :-
+    comprimento(T, N),
+    R is N + 1.
+
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
@@ -563,6 +564,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
