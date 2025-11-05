@@ -525,7 +525,11 @@ somaLista([H|T], R) :-
     somaLista(T, X),
     R is H + X.
 
-% comprimento(Lista, N) já deve estar definido no teu código base???
+comprimento([], 0).
+comprimento([H|T], R) :-
+    comprimento(T, R1),
+    R is R1 + 1.
+
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
@@ -564,6 +568,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
