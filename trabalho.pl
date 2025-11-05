@@ -2,6 +2,7 @@
 :- dynamic paciente/6. 
 :- dynamic consulta/7.
 :- dynamic ta/7.
+:- dynamic medicamento/3.
 :- dynamic '-'/1.
 :- op( 900,xfy,'::' ).
 :- op(500, xfy, e).
@@ -563,6 +564,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
