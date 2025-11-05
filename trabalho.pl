@@ -476,27 +476,31 @@ taClassificacao(C, R) :-
 numeroTA(R) :-
     findall(IdT, ta(IdT, _, _, _, _, _, _), L),
     comprimento(L, R).
+    
+% Extensão do predicado pacientesHipotensos: R -> {V,F}
+pacientesHipotensos(R) :-
+    findall(IdP, ta(_, 'Hipotensão', IdP, _, _, _, _), L),
+    sort(L, R).
 
-% Extensão do predicado mediaSistolica: M -> {V,F}
-mediaSistolica(M) :-
-    findall(SS, (ta(_, _, _, _, SS, _, _), number(SS)), L),
-    somaLista(L, Soma),
-    comprimento(L, N),
-    N > 0,
-    M is Soma / N.
-
-% Extensão do predicado mediaDiastolica: M -> {V,F}
-mediaDiastolica(M) :-
-    findall(DS, (ta(_, _, _, _, _, _, DS), number(DS)), L),
-    somaLista(L, Soma),
-    comprimento(L, N),
-    N > 0,
-    M is Soma / N.
-
+% Extensão do predicado pacientesNormalBaixa: R -> {V,F}
+pacientesNormalBaixa(R) :-
+    findall(IdP, ta(_, 'Normal-baixa', IdP, _, _, _, _), L),
+    sort(L, R).
+    
+% Extensão do predicado pacientesNormais: R -> {V,F}
+pacientesNormais(R) :-
+    findall(IdP, ta(_, 'Normal', IdP, _, _, _, _), L),
+    sort(L, R).
+    
+% Extensão do predicado pacientesNormalAlta: R -> {V,F}
+pacientesNormalAlta(R) :-
+    findall(IdP, ta(_, 'Normal-alta', IdP, _, _, _, _), L),
+    sort(L, R).
+    
 % Extensão do predicado pacientesHipertensos: R -> {V,F}
 pacientesHipertensos(R) :-
-    findall(IdP, (ta(_, _, IdP, _, SS, _, _), SS >= 140), L),
-    sort(L, R).  % remove duplicados
+    findall(IdP, ta(_, 'Hipertensão', IdP, _, _, _, _), L),
+    sort(L, R).
 
 
 % Mendicamento - - - - - - - - - - - - - - - - - - 
@@ -548,6 +552,7 @@ estatisticasSistema :-
     write('Pacientes hipertensos: '), write(Hip), nl,
     write('Número de pacientes hipertensos: '), write(NumHip), nl,
     nl, write('==================================='), nl.
+
 
 
 
