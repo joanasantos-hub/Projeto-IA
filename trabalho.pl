@@ -216,9 +216,6 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode existir mais do que um registo da mesma tensão arterial
 +ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdTA, ta(IdTA, _, _, _, _, _, _), L),length(L, X),X == 1).
 
-% Não pode existir mais do que um registo do mesmo medicamento (por Id do paciente)
-+medicamento(IdP, M, D)::(findall(IdP, medicamento(IdP, _, _), L),length(L, X),X == 1).
-
 % Não pode ser registada uma consulta para um paciente inexistente
 +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
@@ -564,6 +561,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
