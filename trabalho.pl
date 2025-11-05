@@ -529,29 +529,44 @@ somaLista([H|T], R) :-
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
-
-estatisticasSistema :-
+estatisticasPacientes :-
     numeroPacientes(NPac),
     numeroConsultas(NCons),
     numeroTA(NTA),
     numeroMedicados(NMed),
-    mediaSistolica(MSis),
-    mediaDiastolica(MDias),
-    mediaPulsacao(MPul),
-    pacientesHipertensos(Hip),
-    comprimento(Hip, NumHip),
+    pacientesHipotensos(Hipo), comprimento(Hipo, NumHipo),
+    pacientesNormalBaixa(NB), comprimento(NB, NumNB),
+    pacientesNormais(Norm), comprimento(Norm, NumNorm),
+    pacientesNormalAlta(NA), comprimento(NA, NumNA),
+    pacientesHipertensos(Hip), comprimento(Hip, NumHip),
 
-    nl, write('===== ESTATÍSTICAS DO SISTEMA ====='), nl, nl,
-    write('Número total de pacientes: '), write(NPac), nl,
+    nl, write('===== ESTATÍSTICAS DE PACIENTES ====='), nl, nl,
+    write('Número total de pacientes: '), write(NPac), nl, nl,
     write('Número total de consultas: '), write(NCons), nl,
     write('Número total de registos de tensão arterial: '), write(NTA), nl,
     write('Número total de pacientes medicados: '), write(NMed), nl, nl,
-    write('Média sistólica: '), write(MSis), nl,
-    write('Média diastólica: '), write(MDias), nl,
-    write('Média de pulsação: '), write(MPul), nl, nl,
-    write('Pacientes hipertensos: '), write(Hip), nl,
-    write('Número de pacientes hipertensos: '), write(NumHip), nl,
-    nl, write('==================================='), nl.
+    write('Pacientes hipotensos: '), write(NumHipo), nl,
+    write('Pacientes com tensão normal-baixa: '), write(NumNB), nl,
+    write('Pacientes com tensão normal: '), write(NumNorm), nl,
+    write('Pacientes com tensão normal-alta: '), write(NumNA), nl,
+    write('Pacientes hipertensos: '), write(NumHip), nl, nl,
+    write('====================================='), nl.
+
+% Estatísticas sobre medicamentos
+estatisticasMedicamentos :-
+    numeroMedicados(NMed),
+    findall(M, medicamento(_, M, _), LMed),
+    sort(LMed, MedsUnicos),
+    comprimento(MedsUnicos, NumMeds),
+
+    nl, write('===== ESTATÍSTICAS DE MEDICAÇÃO ====='), nl, nl,
+    write('Número total de pacientes medicados: '), write(NMed), nl,
+    write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
+    write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
+    write('====================================='), nl.
+
+
+
 
 
 
