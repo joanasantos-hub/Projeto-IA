@@ -518,7 +518,6 @@ numeroMedicados(R) :-
     comprimento(L, R).
 
 % Predicado auxiliar - - - - - - - - - - - - - - - - - - 
-
 comprimento([], 0).
 comprimento([_|T], R) :-
     comprimento(T, N),
@@ -564,6 +563,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
