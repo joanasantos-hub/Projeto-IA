@@ -57,11 +57,46 @@ interdito(morada_interdita).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastolica, Sistolica, Pulsacao -> {V,F,D}
+
+% p1 - Ana Martins (Normal-baixa)
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
+
+% p2 - Carlos Pereira (Hipertensão -> Normal-Alta -> Hipertensão -> ...)
+consulta(c2, 05-02-2025, p2, 23, 90, 145, 80).
+consulta(c12, 20-02-2025, p2, 23, 88, 138, 78).
+consulta(c22, 10-03-2025, p2, 23, 92, 150, 82).
+
+% p3 - Joana Costa (Normal-alta -> Normal)
 consulta(c3, 10-02-2025, p3, 30, 88, 134, 78).
+consulta(c13, 25-02-2025, p3, 30, 82, 126, 75).
+
+% p4 - Miguel Fernandes (Hipertensão -> Hipertensão -> Hipertensão)
+consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
+consulta(c14, 26-02-2025, p4, 47, 94, 152, 84).
+consulta(c23, 15-03-2025, p4, 47, 90, 142, 80).
+
+% p5 - Rita Sousa (Normal-baixa)
 consulta(c5, 14-02-2025, p5, 32, 74, 118, 72).
+
+% p6 - Ana Franco (Normal)
 consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
+
+% p7 - nome desconhecido (Normal-alta → Normal)
 consulta(c7, 22-02-2025, p7, 35, 87, 133, 70).
+consulta(c17, 16-03-2025, p7, 35, 85, 129, 72).
+
+% p8 - Anabela Martins (Normal-baixa -> Normal)
+consulta(c8, 14-10-2025, p8, 20, p_diastolica, 121, 76).
+
+% p9 - José Antunes (Normal-baixa)
+consulta(c9, 14-03-2025, p9, 21, 69, 118, pulsacao_des).
+
+% p10 - Ana Antunes / Joana Leite (Normal-baixa -> ...)
+consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
+
+% p11 - Raquel Freitas (Normal-alta -> Normal)
+consulta(c21, 24-03-2025, p11, 21, 89, 132, 79).
+consulta(c24, 10-04-2025, p11, 21, 87, 130, 77).
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -97,15 +132,73 @@ interdito(pulsaca_inter).
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado tensao arterial: IdTA, Classifcacao, IdPaciente, Sistolica Inferior, Sistolica Superior, Diastolica Inferior, Diastolica Superior -> {V,F,D}
+% Extensao do predicado tensao arterial: Classifcacao, Sistolica Inferior, Sistolica Superior, Diastolica Inferior, Diastolica Superior -> {V,F,D}
 
-ta(ta1, 'Normal-baixa', p1, 85, 119, 55, 75).
-ta(ta2, 'Normal', p2, 120, 129, 75, 85).
-ta(ta3, 'Normal-alta', p3, 130, 139, 86, 89).
-ta(ta4, 'Hipertensão', p4, 140, 159, 90, 99).
-ta(ta7, 'Normal-alta', p7, 130, 139, 86, 89).
-ta(ta8, 'Normal', p8, 120, 129, 75, 85).
-ta(ta9, 'Normal-baixa', p9, 85, 119, 55, 75).
+ta('Hipotensão', 0, 84, 0, 54).
+ta('Normal-baixa', 85, 119, 55, 75).
+ta('Normal', 120, 129, 75, 85).
+ta('Normal-alta', 130, 139, 86, 89).
+ta('Hipertensão', 140, 200, 90, 150).
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensao do predicado historico: IdPaciente, Data, Diastolica, Sistolica, Classifcacao, Pulsacao -> {V,F,D}
+
+classifica_tensao(Sistolica, Diastolica, Classificacao) :-
+    ta(Classificacao, SisInf, SisSup, DiaInf, DiaSup),
+    Sistolica >= SisInf, Sistolica =< SisSup,
+    Diastolica >= DiaInf, Diastolica =< DiaSup.
+
+classifica_tensao(Sistolica, Diastolica, Classe) :-
+    ta(Classe, SisInf, SisSup, DiaInf, DiaSup),
+    Sistolica >= SisInf,
+    Sistolica =< SisSup,
+    Diastolica >= DiaInf,
+    Diastolica =< DiaSup.
+
+regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
+    assert(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
+    classifica_tensao(Sistolica, Diastolica, Classificacao),
+    assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
+
+% Paciente p1
+historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
+
+% Paciente p2
+historico(p2, 05-02-2025, 90, 145, 'Hipertensão', 80).
+historico(p2, 20-02-2025, 88, 138, 'Normal-alta', 78).
+historico(p2, 10-03-2025, 92, 150, 'Hipertensão', 82).
+
+% Paciente p3
+historico(p3, 10-02-2025, 88, 134, 'Normal-alta', 78).
+historico(p3, 25-02-2025, 82, 126, 'Normal', 75).
+
+% Paciente p4
+historico(p4, 12-02-2025, 91, 140, 'Hipertensão', pulsaca_inter).
+historico(p4, 26-02-2025, 94, 152, 'Hipertensão', 84).
+historico(p4, 15-03-2025, 90, 142, 'Hipertensão', 80).
+
+% Paciente p5
+historico(p5, 14-02-2025, 74, 118, 'Normal-baixa', 72).
+
+% Paciente p6
+historico(p6, 20-02-2025, 80, 120, 'Normal', 75).
+
+% Paciente p7
+historico(p7, 22-02-2025, 87, 133, 'Normal-alta', 70).
+historico(p7, 16-03-2025, 85, 129, 'Normal', 72).
+
+% Paciente p8
+historico(p8, 14-10-2025, p_diastolica, 121, 'Normal', 76).
+
+% Paciente p9
+historico(p9, 14-03-2025, 69, 118, 'Normal-baixa', pulsacao_des).
+
+% Paciente p10
+historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 70).
+
+% Paciente p11
+historico(p11, 24-03-2025, 89, 132, 'Normal-alta', 79).
+historico(p11, 10-04-2025, 87, 130, 'Normal', 77).
 
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -561,6 +654,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
