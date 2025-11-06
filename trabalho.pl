@@ -133,9 +133,16 @@ classifica_tensao(Sistolica, Diastolica, Classificacao) :-
     Diastolica >= DiaInf, Diastolica =< DiaSup.
 
 regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
+    data_valida(Data),
     assert(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     classifica_tensao(Sistolica, Diastolica, Classificacao),
     assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
+
+% Verifica se a data é válida (não pode ser futura)
+data_valida(Dia-Mes-Ano) :-
+    get_time(Agora),  % obtém a data e hora atuais
+    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _)),
+    (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % mesmo ano e mês, dia igual ou anterior
 
 % Paciente p1
 historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
@@ -591,6 +598,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
