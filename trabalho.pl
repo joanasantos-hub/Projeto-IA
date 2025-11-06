@@ -499,6 +499,11 @@ historico_Classificacao(C, R) :-
 historico_Data(Data,R) :-
     findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), L),
     comprimento(L, R).
+
+% Extensão do predicado numeroHistoricos: R -> {V,F}
+numeroHistoricos(N) :-
+    findall((IdP, D), historico(IdP, D, _, _, _, _), L),
+    length(L, N).
     
 % Extensão do predicado pacientesHipotensos: R -> {V,F}
 pacientesHipotensos(R) :-
@@ -554,7 +559,7 @@ comprimento([_|T], R) :-
 estatisticasPacientes :-
     numeroPacientes(NPac),
     numeroConsultas(NCons),
-    numeroTA(NTA),
+    numeroHistoricos(NHist),
     numeroMedicados(NMed),
     pacientesHipotensos(Hipo), comprimento(Hipo, NumHipo),
     pacientesNormalBaixa(NB), comprimento(NB, NumNB),
@@ -565,7 +570,7 @@ estatisticasPacientes :-
     nl, write('===== ESTATÍSTICAS DE PACIENTES ====='), nl, nl,
     write('Número total de pacientes: '), write(NPac), nl, nl,
     write('Número total de consultas: '), write(NCons), nl,
-    write('Número total de registos de tensão arterial: '), write(NTA), nl,
+    write('Número total de registos de histórico: '), write(NTA), nl,
     write('Número total de pacientes medicados: '), write(NMed), nl, nl,
     write('Pacientes hipotensos: '), write(NumHipo), nl,
     write('Pacientes com tensão normal-baixa: '), write(NumNB), nl,
@@ -586,6 +591,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
