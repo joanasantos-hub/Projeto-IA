@@ -431,18 +431,18 @@ tabela_c(desconhecido, falso, falso).
 tabela_c(desconhecido, desconhecido, desconhecido).
 
 % Nossa---------------------------------------------------------------
-si_conjuncao(Q1, Q2, Resultado) :-
-    si(Q1, R1),
-    si(Q2, R2),
-    tabela_c(R1, R2, Resultado). 
+%si_conjuncao(Q1, Q2, Resultado) :-
+    %si(Q1, R1),
+    %si(Q2, R2),
+    %tabela_c(R1, R2, Resultado). 
  
 % Stor---------------------------------------------------------------   
-si_conjuncao2(Q1 e Q2, R) :-
-    si_conjuncao2(Q1, R1),
-    si_conjuncao2(Q2, R2),
-    conjuncao(R1, R2, R).
+%si_conjuncao2(Q1 e Q2, R) :-
+    %si_conjuncao2(Q1, R1),
+    %si_conjuncao2(Q2, R2),
+    %conjuncao(R1, R2, R).
  
-conjuncao(C1, C2, (C1 e C2)).
+%conjuncao(C1, C2, (C1 e C2)).
 
 siR(Q1 e Q2, CR,R) :- %????????
     siR(Q1, CR1, R1),
@@ -463,18 +463,18 @@ tabela_d(desconhecido, falso,     desconhecido).
 tabela_d(desconhecido, desconhecido, desconhecido).
 
 %Nossa---------------------------------------------------------------
-si_disjuncao(Q1, Q2, Resultado) :-
-    si(Q1, R1),
-    si(Q2, R2),
-    tabela_disjuncao(R1, R2, Resultado).
+%si_disjuncao(Q1, Q2, Resultado) :-
+    %si(Q1, R1),
+    %si(Q2, R2),
+    %tabela_disjuncao(R1, R2, Resultado).
 
 %Stor---------------------------------------------------------------   
-si_disjuncao2(Q1 ou Q2, R) :-
-    si_disjuncao2(Q1, R1),
-    si_disjuncao2(Q2, R2),
-    dijuncao(R1, R2, R). 
+%si_disjuncao2(Q1 ou Q2, R) :-
+    %si_disjuncao2(Q1, R1),
+    %si_disjuncao2(Q2, R2),
+    %dijuncao(R1, R2, R). 
     
-dijuncao(C1, C2, (C1 ou C2)).
+%dijuncao(C1, C2, (C1 ou C2)).
 
 siR(Q1 ou Q2, CR,R) :-
     siR(Q1, CR1, R1),
@@ -486,25 +486,9 @@ siR(Q,R,R):-
     si(Q,R).
 
 composicao( C1 e C2,C ) :-
-    aand( C1,C2,C ).
+    tabela_c( C1,C2,C ).
 composicao( C1 ou C2,C ) :-
-    oor( C1,C2,C ).
-
-aand( verdadeiro,Valor,Valor ) :- !.
-aand( Valor,verdadeiro,Valor ) :- !.
-aand( desconhecido,desconhecido,desconhecido ).
-aand( falso,Valor,falso ) :- !.
-aand( Valor,falso,falso ).
-
-oor( verdadeiro,Valor,verdadeiro ) :- !.
-oor( Valor,verdadeiro,verdadeiro ) :- !.
-oor( desconhecido,Valor,desconhecido ) :- !.
-oor( Valor,desconhecido,desconhecido ).
-oor( falso,falso,falso ).
-
-# Explicar o siR e o que é o CR1 e CR2
-# Como funciona siC (como vai buscar as tabelas?)
-# Não podemos usar !
+    tabela_d( C1,C2,C ).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Relatar 
@@ -654,6 +638,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
