@@ -28,7 +28,6 @@ paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua doss Chãos').
 paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente').
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
-
 % Morada do paciente desconhecida
 paciente(p6, 'Ana Franco', 13-05-1992, 32, feminino, morada_desconhecida).
 excecao(paciente(Id, N, D, I, S, M)) :-
@@ -40,13 +39,11 @@ excecao(paciente(Id, N, D, I, S, M)) :-
     paciente(Id, nome_desconhecido, D, I, S, M).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
-
 % Nome do paciente desconhecido entre duas possibilidades
 excecao(paciente(p10, 'Ana Antunes', 12-07-2004, 21, feminino, '5 Largo da Estação')).
 excecao(paciente(p10, 'Joana Leite', 12-07-2004, 21, feminino, '5 Largo da Estação')).
 
 %Conhecimento Imperfeito Interdito  - - - - - - - - - - - - - - - - - - 
-
 % Morada do paciente interdita
 paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, morada_interdita).
 excecao( paciente(Id, N, D, I, S, M)) :- 
@@ -58,72 +55,58 @@ interdito(morada_interdita).
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensao do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastolica, Sistolica, Pulsacao -> {V,F,D}
 
-% p1 - Ana Martins (Normal-baixa)
+% Paciente p1
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
 
-% p2 - Carlos Pereira (Hipertensão -> Normal-Alta -> Hipertensão -> ...)
-consulta(c2, 05-02-2025, p2, 23, 90, 145, 80).
+% Paciente p2
 consulta(c12, 20-02-2025, p2, 23, 88, 138, 78).
 consulta(c22, 10-03-2025, p2, 23, 92, 150, 82).
 
-% p3 - Joana Costa (Normal-alta -> Normal)
+% Paciente p3
 consulta(c3, 10-02-2025, p3, 30, 88, 134, 78).
 consulta(c13, 25-02-2025, p3, 30, 82, 126, 75).
 
-% p4 - Miguel Fernandes (Hipertensão -> Hipertensão -> Hipertensão)
-consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
+% Paciente p4
 consulta(c14, 26-02-2025, p4, 47, 94, 152, 84).
 consulta(c23, 15-03-2025, p4, 47, 90, 142, 80).
 
-% p5 - Rita Sousa (Normal-baixa)
+% Paciente p5
 consulta(c5, 14-02-2025, p5, 32, 74, 118, 72).
 
-% p6 - Ana Franco (Normal)
+% Paciente p6
 consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
 
-% p7 - nome desconhecido (Normal-alta → Normal)
+% Paciente p7
 consulta(c7, 22-02-2025, p7, 35, 87, 133, 70).
 consulta(c17, 16-03-2025, p7, 35, 85, 129, 72).
 
-% p8 - Anabela Martins (Normal-baixa -> Normal)
-consulta(c8, 14-10-2025, p8, 20, p_diastolica, 121, 76).
-
-% p9 - José Antunes (Normal-baixa)
-consulta(c9, 14-03-2025, p9, 21, 69, 118, pulsacao_des).
-
-% p10 - Ana Antunes / Joana Leite (Normal-baixa -> ...)
-consulta(c10, 02-03-2025, p10, 21, 70, 115, 70).
-
-% p11 - Raquel Freitas (Normal-alta -> Normal)
+% Paciente p11
 consulta(c21, 24-03-2025, p11, 21, 89, 132, 79).
 consulta(c24, 10-04-2025, p11, 21, 87, 130, 77).
 
-% Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
-
-% Pressão diastólica desconhecida
+% Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - -
+% Paciente p8 -> Pressão diastólica desconhecida
 consulta(c8, 14-10-2025, p8, 20, p_diastolica, 121, 76).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
     consulta(IdC, D, IdP, I, p_diastolica, S, P).
-    
-% Pulsação desconhecida
+
+% Paciente p9 -> Pulsação desconhecida
 consulta(c9, 14-03-2025, p9, 21, 69, 118, pulsacao_des).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
     consulta(IdC, D, IdP, I, D, S, pulsacao_des).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
-
-% A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
+% Paciente p2 -> A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
 excecao(consulta(c2, 05-02-2025, p2, 23, 84, 128, X)):-
     X >= 77,
     X =< 85.
     
-% O Id do paciente é desconhecido, mas tem duas possibilidades
+% % Paciente p10 -> A pulsação do paciente é desconhecida, mas tem duas possibilidades
 excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
-excecao(consulta(c10, 02-03-2025, p11, 21, 70, 115, 70)).
+excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 75)).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
-
-% Pulsação do paciente interdita
+% % Paciente p4 -> Pulsação do paciente interdita
 consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :- 
     consulta(IdC, D, IdP, I, D, S, pulsaca_inter).
@@ -164,7 +147,6 @@ regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
 historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
 
 % Paciente p2
-historico(p2, 05-02-2025, 90, 145, 'Hipertensão', 80).
 historico(p2, 20-02-2025, 88, 138, 'Normal-alta', 78).
 historico(p2, 10-03-2025, 92, 150, 'Hipertensão', 82).
 
@@ -173,7 +155,6 @@ historico(p3, 10-02-2025, 88, 134, 'Normal-alta', 78).
 historico(p3, 25-02-2025, 82, 126, 'Normal', 75).
 
 % Paciente p4
-historico(p4, 12-02-2025, 91, 140, 'Hipertensão', pulsaca_inter).
 historico(p4, 26-02-2025, 94, 152, 'Hipertensão', 84).
 historico(p4, 15-03-2025, 90, 142, 'Hipertensão', 80).
 
@@ -187,47 +168,42 @@ historico(p6, 20-02-2025, 80, 120, 'Normal', 75).
 historico(p7, 22-02-2025, 87, 133, 'Normal-alta', 70).
 historico(p7, 16-03-2025, 85, 129, 'Normal', 72).
 
-% Paciente p8
-historico(p8, 14-10-2025, p_diastolica, 121, 'Normal', 76).
-
-% Paciente p9
-historico(p9, 14-03-2025, 69, 118, 'Normal-baixa', pulsacao_des).
-
-% Paciente p10
-historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 70).
-
 % Paciente p11
 historico(p11, 24-03-2025, 89, 132, 'Normal-alta', 79).
 historico(p11, 10-04-2025, 87, 130, 'Normal', 77).
 
+
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
-
-% A Classificação é desconhecida
-ta(ta5, class_desconhecida, p5, 85, 119, 55, 75).
-excecao(ta(IdT, C, IdP, SI, SS, DI, DS)) :-
-    ta(IdT, class_desconhecida, IdP, SI, SS, DI, DS).
-
-% O Id é desconhecida
-ta(ta6, 'Normal', id_pac_desc, 120, 129, 75, 85).
-excecao(ta(IdT, C, IdP, SI, SS, DI, DS)) :-
-    ta(IdT, class_desconhecida, id_pac_desc, SI, SS, DI, DS).
+% Paciente p8 -> Pressão diastólica desconhecida
+historico(p8, 14-10-2025, diastolica_des, 121, 'Normal', 76).
+excecao(historico(IdP, D, DIA, SIS, C, P)) :-
+    historico(IdP, D, diastolica_des, SIS, C, P).
+    
+% Paciente p9 -> A Pulsação é desconhecida
+historico(p9, 14-03-2025, 69, 118, 'Normal-baixa', pulsacao_des).
+excecao(historico(IdP, D, DIA, SIS, C, P)) :-
+    historico(IdP, D, DIA, SIS, C, pulsacao_des).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+% Paciente p2 -> A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
+excecao(historico(p2, 05-02-2025, 90, 145, 'Hipertensão', X)):-
+    X >= 77,
+    X =< 85.
 
-% A Sistolica Inferior pertence a um interavlo de valores
-exceção(ta(ta11, 'Normal-baixa', p11, X, 119, 55, 75)):-
-    X >= 80,
-    X =< 90.
+% Paciente p10 -> A pulsação do paciente é desconhecida, mas tem duas possibilidades
+excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 70)).
+excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 75)).
+
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
-
-% Classificação do paciente interdita
-ta(ta10, class_inter, p10, 85, 119, 55, 75).
-excecao( ta(IdT, C, IdP, SI, SS, DI, DS)) :- 
-    ta(IdT, class_inter, IdP, SI, SS, DI, DS).
-interdito(class_inter).
-+ta(IdT, C, IdP, SI, SS, DI, DS) :: (findall( (IdT, Cs, IdP, SI, SS, DI, DS),(ta(ta10, Cs, p10, 85, 119, 55, 75),nao(interdito(Cs))),S ),
+% Paciente p4 -> Pulsação do paciente interdita
+historico(p4, 12-02-2025, 91, 140, 'Hipertensão', pulsacao_inter).
+excecao( historico(IdP, D, DIA, SIS, C, P)) :- 
+     historico(IdP, D, DIA, SIS, C, pulsacao_inter).
+interdito(pulsacao_inter).
++ historico(IdP, D, DIA, SIS, C, P) :: (findall( (IdP, D, DIA, SIS, C, Ps),(historico(p4, 12-02-2025, 91, 140, 'Hipertensão', Ps).,nao(interdito(Ps))),S ),
                   length( S,N ), N == 0).
+
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -     
 % Extensao do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
@@ -240,30 +216,27 @@ medicamento(p9, 'Hidroclorotiazida', '12.5mg/dia').
 medicamento(p11, 'Perindopril', '4mg/dia').
 
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
-
-% O Medicamento é desconhecido
+% Paciente7 ->O Medicamento é desconhecido
 medicamento(p7, medic_desconhecido,'10mg/dia').
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, medic_desconhecido, D).
 
-% A Dosagem é desconhecida
+% Paciente6 ->A Dosagem é desconhecida
 medicamento(p6, 'Enalapril', dose_desconhecida).
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, M, dose_desconhecida).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
-
-% O Medicamento tem duas possibilidades
+% Paciente1 -> O Medicamento tem duas possibilidades
 excecao(medicamento(p1, 'Ramipril', '10mg/dia')).
 excecao(medicamento(p1, 'Captopril', '10mg/dia')).
 
-% O Medicamento tem duas possibilidades
+% Paciente10 -> O Medicamento tem duas possibilidades
 excecao(medicamento(p10, 'Losartan', '50mg/dia')).
 excecao(medicamento(p10, 'Amlodipina', '5mg/dia')).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
-
-% Medicamento e dosagem do paciente interditos
+% Paciente8 -> Medicamento e dosagem do paciente interditos
 medicamento(p8, medic_interdito, dose_interdita).
 excecao(medicamento(IdP, M, D)) :- 
     medicamento(IdP, medic_interdito, dose_interdita).
@@ -638,6 +611,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
