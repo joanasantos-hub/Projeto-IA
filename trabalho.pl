@@ -1,7 +1,8 @@
 % SICStus PROLOG: Definicoes iniciais
 :- dynamic paciente/6. 
 :- dynamic consulta/7.
-:- dynamic ta/7.
+:- dynamic ta/5.
+:- dynamic historico/6.
 :- dynamic medicamento/3.
 :- dynamic '-'/1.
 :- op( 900,xfy,'::' ).
@@ -49,7 +50,7 @@ paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, morada_interdita).
 excecao( paciente(Id, N, D, I, S, M)) :- 
     paciente(Id, N, D, I, S, morada_interdita).
 interdito(morada_interdita).
-+paciente(Id, N, D, I, S, M) :: (findall( (Id, N, D, I, S, Ms),(paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, Ms),nao(interdito(Ms))),S ),
++paciente(Id, N, D, I, S, M) :: (findall((Id, N, D, I, S, Ms),(paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, Ms),nao(interdito(Ms))),S ),
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
@@ -101,7 +102,7 @@ excecao(consulta(c2, 05-02-2025, p2, 23, 84, 128, X)):-
     X >= 77,
     X =< 85.
     
-% % Paciente p10 -> A pulsação do paciente é desconhecida, mas tem duas possibilidades
+% Paciente p10 -> A pulsação do paciente é desconhecida, mas tem duas possibilidades
 excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
 excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 75)).
 
@@ -111,7 +112,7 @@ consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
 excecao(consulta(IdC, D, IdP, I, D, S, P)) :- 
     consulta(IdC, D, IdP, I, D, S, pulsaca_inter).
 interdito(pulsaca_inter).
-+consulta(IdC, D, IdP, I, D, S, P) :: (findall( (IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps),nao(interdito(Ps))),S ),
++consulta(IdC, D, IdP, I, D, S, P) :: (findall((IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps),nao(interdito(Ps))),S ),
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
@@ -165,7 +166,6 @@ historico(p7, 16-03-2025, 85, 129, 'Normal', 72).
 historico(p11, 24-03-2025, 89, 132, 'Normal-alta', 79).
 historico(p11, 10-04-2025, 87, 130, 'Normal', 77).
 
-
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
 % Paciente p8 -> Pressão diastólica desconhecida
 historico(p8, 14-10-2025, diastolica_des, 121, 'Normal', 76).
@@ -187,16 +187,14 @@ excecao(historico(p2, 05-02-2025, 90, 145, 'Hipertensão', X)):-
 excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 70)).
 excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 75)).
 
-
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
 % Paciente p4 -> Pulsação do paciente interdita
 historico(p4, 12-02-2025, 91, 140, 'Hipertensão', pulsacao_inter).
 excecao( historico(IdP, D, DIA, SIS, C, P)) :- 
      historico(IdP, D, DIA, SIS, C, pulsacao_inter).
 interdito(pulsacao_inter).
-+ historico(IdP, D, DIA, SIS, C, P) :: (findall( (IdP, D, DIA, SIS, C, Ps),(historico(p4, 12-02-2025, 91, 140, 'Hipertensão', Ps).,nao(interdito(Ps))),S ),
++ historico(IdP, D, DIA, SIS, C, P) :: (findall((IdP, D, DIA, SIS, C, Ps),(historico(p4, 12-02-2025, 91, 140, 'Hipertensão', Ps).,nao(interdito(Ps))),S ),
                   length( S,N ), N == 0).
-
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -     
 % Extensao do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
@@ -272,14 +270,17 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode existir mais do que um registo da mesma consulta
 +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdC, consulta(IdC, _, _, _, _, _, _), L),length(L, X),X == 1).
 
-% Não pode existir mais do que um registo da mesma tensão arterial
-+ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdTA, ta(IdTA, _, _, _, _, _, _), L),length(L, X),X == 1).
+% Não pode existir mais do que um registo do mesmo historico
++historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall((IdP, Data), historico(IdP, Data, _, _, _, _), L),length(L, X),X == 1).
+
+% Um paciente não pode ter dois registos de medicamento idênticos
++medicamento(IdP, M, D)::(findall(M, medicamento(IdP, M, _), L),length(L, X),X == 1).
 
 % Não pode ser registada uma consulta para um paciente inexistente
 +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
-% Não pode ser registada uma tensão arterial para um paciente inexistente
-+ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+% Não pode ser registado um historico para um paciente inexistente
++historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
 % Não pode ser registado um medicamento para um paciente inexistente
 +medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
@@ -287,8 +288,8 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode ser removido um paciente que tenha consultas associadas
 -paciente(Id, N, D, I, S, M)::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
 
-% Não pode ser removido um paciente que tenha tensões arteriais associadas
--paciente(Id, N, D, I, S, M)::(findall(IdTA, ta(IdTA, _, Id, _, _, _, _), L),length(L, X),X == 0).
+% Não pode ser removido um paciente que tenha hitoricos associados
+-paciente(Id, N, D, I, S, M)::(findall(Id, historico(Id,_, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um paciente que tenha medicação associada
 -paciente(Id, N, D, I, S, M)::(findall(Med, medicamento(Id, Med, _), L),length(L, X),X == 0).
@@ -296,17 +297,11 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode ser removida uma consulta se o paciente ainda existir
 -consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
-% Não pode ser removida uma tensão arterial se o paciente ainda existir
--ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
+% Não pode ser removido um historico se o paciente ainda existir
+-historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um medicamento se o paciente ainda existir
 -medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
-
-% Um paciente não pode ter duas tensões arteriais com o mesmo tipo de classificação
-+ta(IdTA, C, IdP, SI, SS, DI, DS)::(findall(C, ta(_, C, IdP, _, _, _, _), L),length(L, X),X == 1).
-
-% Um paciente não pode ter dois registos de medicamento idênticos
-+medicamento(IdP, M, D)::(findall(M, medicamento(IdP, M, _), L),length(L, X),X == 1).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Transições de conhecimento: V->F, F->V ...
@@ -376,16 +371,16 @@ nao(Questao).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Sistema de inferencia
+
 si(Questao,verdadeiro):- Questao.
-
 si(Questao, falso) :- -Questao.
-
 si(Questao, desconhecido):-
     nao(Questao),
     nao(-Questao).
 
-% Valores tabela de verdade conjucao para o sistema de inferencia
+% Conjunção - - - - - - - - - - - - - - - - - - 
 
+% Valores da tabela de verdade da conjucao
 tabela_c(verdadeiro, verdadeiro, verdadeiro).
 tabela_c(verdadeiro, falso, falso).
 tabela_c(falso, verdadeiro, falso).
@@ -396,28 +391,25 @@ tabela_c(falso, desconhecido, falso).
 tabela_c(desconhecido, falso, falso).
 tabela_c(desconhecido, desconhecido, desconhecido).
 
-% Nossa---------------------------------------------------------------
-%si_conjuncao(Q1, Q2, Resultado) :-
-    %si(Q1, R1),
-    %si(Q2, R2),
-    %tabela_c(R1, R2, Resultado). 
- 
-% Stor---------------------------------------------------------------   
+conjuncao(C1, C2, (C1 e C2)).
+
+composicao_c(C1 e C2,C) :-
+    tabela_c(C1,C2,C).
+
 %si_conjuncao2(Q1 e Q2, R) :-
     %si_conjuncao2(Q1, R1),
     %si_conjuncao2(Q2, R2),
     %conjuncao(R1, R2, R).
- 
-%conjuncao(C1, C2, (C1 e C2)).
 
-siR(Q1 e Q2, CR,R) :- %????????
+siR(Q1 e Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
     conjuncao(CR1, CR2, CR),
-    composicao(CR, R).
+    composicao_c(CR, R).
 
-% Valores tabela de verdade disjuncao para o sistema de inferencia
+% Disjunção - - - - - - - - - - - - - - - - - - 
 
+% Valores da tabela de verdade da disjuncao
 tabela_d(verdadeiro, verdadeiro, verdadeiro).
 tabela_d(verdadeiro, falso,    verdadeiro).
 tabela_d(falso,    verdadeiro, verdadeiro).
@@ -428,33 +420,24 @@ tabela_d(falso,    desconhecido, desconhecido).
 tabela_d(desconhecido, falso,     desconhecido).
 tabela_d(desconhecido, desconhecido, desconhecido).
 
-%Nossa---------------------------------------------------------------
-%si_disjuncao(Q1, Q2, Resultado) :-
-    %si(Q1, R1),
-    %si(Q2, R2),
-    %tabela_disjuncao(R1, R2, Resultado).
-
-%Stor---------------------------------------------------------------   
 %si_disjuncao2(Q1 ou Q2, R) :-
     %si_disjuncao2(Q1, R1),
     %si_disjuncao2(Q2, R2),
     %dijuncao(R1, R2, R). 
     
-%dijuncao(C1, C2, (C1 ou C2)).
+dijuncao(C1, C2, (C1 ou C2)).
+
+composicao_d(C1 ou C2,C) :-
+    tabela_d(C1,C2,C).
 
 siR(Q1 ou Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
     disjuncao(CR1, CR2, CR),
-    composicao(CR, R).
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-siR(Q,R,R):-
-    si(Q,R).
+    composicao_d(CR, R).
 
-composicao( C1 e C2,C ) :-
-    tabela_c( C1,C2,C ).
-composicao( C1 ou C2,C ) :-
-    tabela_d( C1,C2,C ).
+%siR(Q,R,R):- ????? TEMOS QUE VER SE É PRECISO
+    %si(Q,R).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Relatar 
@@ -483,7 +466,6 @@ pacientesFaixaEtaria(Inf, Sup, R) :-
     findall(I, (consulta(_, _, _, I, _, _, _), I >= Inf, I =< Sup), L),
     comprimento(L, R).
 
-
 % Consulta - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado idConsulta: IdC, R -> {V,F}
@@ -503,47 +485,47 @@ numeroConsultas(R) :-
     findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
     comprimento(L, R).
 
-% Tensão Arterial - - - - - - - - - - - - - - - - - - 
+% Historico - - - - - - - - - - - - - - - - - - 
 
-% Extensão do predicado taPaciente: IdP, R -> {V,F}
-taPaciente(IdP, R) :-
-    findall((IdT, C, IdP, SI, SS, DI, DS), ta(IdT, C, IdP, SI, SS, DI, DS), R).
+% Extensão do predicado historico_P: IdP, R -> {V,F}
+historico_P(IdP, R) :-
+    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), R).
 
-% Extensão do predicado taClassificacao: C, R -> {V,F}
-taClassificacao(C, R) :-
-    findall((IdT, C, IdP, SI, SS, DI, DS), ta(IdT, C, IdP, SI, SS, DI, DS), R).
+% Extensão do predicado historico_Classificacao: C, R -> {V,F}
+historico_Classificacao(C, R) :-
+    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), R).
 
-% Extensão do predicado numeroTA: R -> {V,F}
-numeroTA(R) :-
-    findall(IdT, ta(IdT, _, _, _, _, _, _), L),
+% Extensão do predicado historico_Data: R -> {V,F}
+historico_Data(Data,R) :-
+    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), L),
     comprimento(L, R).
     
 % Extensão do predicado pacientesHipotensos: R -> {V,F}
 pacientesHipotensos(R) :-
-    findall(IdP, ta(_, 'Hipotensão', IdP, _, _, _, _), L),
+    findall(IdP, historico(IdP, _, _, _, 'Hipotensão', _), L),
     sort(L, R).
 
 % Extensão do predicado pacientesNormalBaixa: R -> {V,F}
 pacientesNormalBaixa(R) :-
-    findall(IdP, ta(_, 'Normal-baixa', IdP, _, _, _, _), L),
+    findall(IdP, historico(IdP, _, _, _, 'Normal-baixa', _), L),
     sort(L, R).
     
 % Extensão do predicado pacientesNormais: R -> {V,F}
 pacientesNormais(R) :-
-    findall(IdP, ta(_, 'Normal', IdP, _, _, _, _), L),
+    findall(IdP, historico(IdP, _, _, _, 'Normal', _), L),
     sort(L, R).
     
 % Extensão do predicado pacientesNormalAlta: R -> {V,F}
 pacientesNormalAlta(R) :-
-    findall(IdP, ta(_, 'Normal-alta', IdP, _, _, _, _), L),
+    findall(IdP, historico(IdP, _, _, _, 'Normal-alta', _), L),
     sort(L, R).
     
 % Extensão do predicado pacientesHipertensos: R -> {V,F}
 pacientesHipertensos(R) :-
-    findall(IdP, ta(_, 'Hipertensão', IdP, _, _, _, _), L),
+    findall(IdP, historico(IdP, _, _, _, 'Hipertensão', _), L),
     sort(L, R).
 
-% Mendicamento - - - - - - - - - - - - - - - - - - 
+% Medicamento - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado medicamentoPaciente: IdP, R -> {V,F}
 medicamentoPaciente(IdP, R) :-
@@ -604,6 +586,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
