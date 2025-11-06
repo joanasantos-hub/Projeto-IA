@@ -131,13 +131,6 @@ classifica_tensao(Sistolica, Diastolica, Classificacao) :-
     Sistolica >= SisInf, Sistolica =< SisSup,
     Diastolica >= DiaInf, Diastolica =< DiaSup.
 
-classifica_tensao(Sistolica, Diastolica, Classe) :-
-    ta(Classe, SisInf, SisSup, DiaInf, DiaSup),
-    Sistolica >= SisInf,
-    Sistolica =< SisSup,
-    Diastolica >= DiaInf,
-    Diastolica =< DiaSup.
-
 regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     assert(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     classifica_tensao(Sistolica, Diastolica, Classificacao),
@@ -611,6 +604,7 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
 
