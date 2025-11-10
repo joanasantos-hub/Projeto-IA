@@ -1,4 +1,4 @@
-% SICStus PROLOG: Definicoes iniciais
+% SICStus PROLOG: Definições Iniciais
 :- dynamic paciente/6. 
 :- dynamic consulta/7.
 :- dynamic ta/5.
@@ -11,13 +11,14 @@
 :- use_module(library(listing)).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% SICStus PROLOG: Declaracoes iniciais
+% SICStus PROLOG: Declarações Iniciais
 :- set_prolog_flag( discontiguous_warnings,off ).
 :- set_prolog_flag( single_var_warnings,off ).
 :- set_prolog_flag( unknown,fail ).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
+% Extensão do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
+% (Conhecimento positivo e negativo)
 
 paciente(p1, 'Ana Martins', 15-09-1987, 38, feminino, '23 Avenida Central').
 paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, '12 Rua das Flores').
@@ -25,43 +26,55 @@ paciente(p3, 'Joana Costa', 03-02-1995, 30, feminino, '5 Largo da Estação').
 paciente(p4, 'Miguel Fernandes', 20-07-1978, 47, masculino, '8 Travessa do Sol').
 paciente(p5, 'Rita Sousa', 11-12-1992, 32, feminino, '14 Rua das Amendoeiras').
 paciente(p8, 'Anabela Martins', 01-05-2005, 20, feminino, '22 Rua da Pedreira').
-paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua doss Chãos').
-paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 rua do Poente').
+paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua dos Chãos').
+paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 Rua do Poente').
+
+-paciente(p22, 'Maria Machado', 01-01-1990, 35, feminino, '7 Rua da Alegria').
+-paciente(p3, 'Joana Costa', 03-02-1995, 30, feminino, '15 Avenida da Liberdade').
+-paciente(p14, 'Diogo Santos', 24-03-2000, 25, masculino, '45 Rua Cândido Oliveira').
+-paciente(p8, 'Anabela Martins', 05-01-2005, 20, feminino, '22 Rua da Pedreira').
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
+
 % Morada do paciente desconhecida
 paciente(p6, 'Ana Franco', 13-05-1992, 32, feminino, morada_desconhecida).
 excecao(paciente(Id, N, D, I, S, M)) :-
     paciente(Id, N, D, I, S, morada_desconhecida).
     
-% Nome do paciente desconhecida
+% Nome do paciente desconhecido
 paciente(p7, nome_desconhecido, 10-01-1990, 35, masculino, 'Rua do Norte').
 excecao(paciente(Id, N, D, I, S, M)) :-
     paciente(Id, nome_desconhecido, D, I, S, M).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
-% Nome do paciente desconhecido entre duas possibilidades
-excecao(paciente(p10, 'Ana Antunes', 12-07-2004, 21, feminino, '5 Largo da Estação')).
-excecao(paciente(p10, 'Joana Leite', 12-07-2004, 21, feminino, '5 Largo da Estação')).
 
-%Conhecimento Imperfeito Interdito  - - - - - - - - - - - - - - - - - - 
+% Nome do paciente desconhecido entre duas possibilidades
+excecao(paciente(p10, 'Ana Antunes', 12-07-2004, 21, feminino, '10 Largo das Flores')).
+excecao(paciente(p10, 'Juliana Leite', 12-07-2004, 21, feminino, '10 Largo das Flores')).
+
+% Conhecimento Imperfeito Interdito  - - - - - - - - - - - - - - - - - - 
+
 % Morada do paciente interdita
-paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, morada_interdita).
-excecao( paciente(Id, N, D, I, S, M)) :- 
+paciente(p12, 'Diana Ferreira', 19-10-2003, 22, feminino, morada_interdita).
+excecao(paciente(Id, N, D, I, S, M)) :- 
     paciente(Id, N, D, I, S, morada_interdita).
 interdito(morada_interdita).
-+paciente(Id, N, D, I, S, M) :: (findall((Id, N, D, I, S, Ms),(paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, Ms),nao(interdito(Ms))),S ),
-                  length( S,N ), N == 0).
+
++paciente(Id, N, D, I, S, M) :: (findall((Id, N, D, I, S, Ms),(paciente(p12, 'Diana Ferreira', 19-10-2003, 22, feminino, Ms), nao(interdito(Ms))), L),
+                  length( L,Num ), Num == 0). % Num diferente de N para não causar confusão entre a variável nome e o contador
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastolica, Sistolica, Pulsacao -> {V,F,D}
+% Extensão do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastólica, Sistólica, Pulsação -> {V,F,D}
+% (Conhecimento positivo e negativo)
 
-% Paciente p1
+% Paciente p1 -> O paciente realizou apenas uma consulta até ao momento
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
+-consulta(c15, 11-03-2025, p1, 32, 74, 118, 72).
 
-% Paciente p2
+% Paciente p2 -> O paciente realizou duas consultas até ao momento
 consulta(c12, 20-02-2025, p2, 23, 88, 138, 78).
 consulta(c22, 10-03-2025, p2, 23, 92, 150, 82).
+-consulta(c22, 10-03-2025, p2, 28, 90, 144, 80).
 
 % Paciente p3
 consulta(c3, 10-02-2025, p3, 30, 88, 134, 78).
@@ -73,6 +86,7 @@ consulta(c23, 15-03-2025, p4, 47, 90, 142, 80).
 
 % Paciente p5
 consulta(c5, 14-02-2025, p5, 32, 74, 118, 72).
+-consulta(c5, 28-02-2024, p5, 32, 74, 118, 72).
 
 % Paciente p6
 consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
@@ -80,23 +94,26 @@ consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
 % Paciente p7
 consulta(c7, 22-02-2025, p7, 35, 87, 133, 70).
 consulta(c17, 16-03-2025, p7, 35, 85, 129, 72).
+-consulta(c26, 04-04-2025, p7, 33, 88, 130, 68).
 
 % Paciente p11
 consulta(c21, 24-03-2025, p11, 21, 89, 132, 79).
 consulta(c24, 10-04-2025, p11, 21, 87, 130, 77).
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - -
+
 % Paciente p8 -> Pressão diastólica desconhecida
 consulta(c8, 14-10-2025, p8, 20, p_diastolica, 121, 76).
-excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
+excecao(consulta(IdC, D, IdP, I, DIAST, S, P)) :- 
     consulta(IdC, D, IdP, I, p_diastolica, S, P).
 
 % Paciente p9 -> Pulsação desconhecida
 consulta(c9, 14-03-2025, p9, 21, 69, 118, pulsacao_des).
-excecao(consulta(IdC, D, IdP, I, D, S, P)) :-
-    consulta(IdC, D, IdP, I, D, S, pulsacao_des).
+excecao(consulta(IdC, D, IdP, I, DIAST, S, P)) :-
+    consulta(IdC, D, IdP, I, DIAST, S, pulsacao_des).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
 % Paciente p2 -> A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
 excecao(consulta(c2, 05-02-2025, p2, 23, 84, 128, X)):-
     X >= 77,
@@ -107,45 +124,51 @@ excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 70)).
 excecao(consulta(c10, 02-03-2025, p10, 21, 70, 115, 75)).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
-% % Paciente p4 -> Pulsação do paciente interdita
-consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsaca_inter).
-excecao(consulta(IdC, D, IdP, I, D, S, P)) :- 
-    consulta(IdC, D, IdP, I, D, S, pulsaca_inter).
-interdito(pulsaca_inter).
-+consulta(IdC, D, IdP, I, D, S, P) :: (findall((IdC, D, IdP, I, D, S, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps),nao(interdito(Ps))),S ),
+
+% Paciente p4 -> Pulsação do paciente interdita
+consulta(c4, 12-02-2025, p4, 47, 91, 140, pulsacao_inter).
+excecao(consulta(IdC, D, IdP, I, DIAST, SIST, P)) :- 
+    consulta(IdC, D, IdP, I, DIAST, SIST, pulsacao_inter).
+interdito(pulsacao_inter).
++consulta(IdC, D, IdP, I, DIAST, SIST, P) :: (findall((IdC, D, IdP, I, DIAST, SIST, Ps),(consulta(c4, 12-02-2025, p4, 47, 91, 140, Ps), nao(interdito(Ps))), S),
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado tensao arterial: Classifcacao, Sistolica Inferior, Sistolica Superior, Diastolica Inferior, Diastolica Superior -> {V,F,D}
+% Extensão do predicado tensão arterial (valores de referência): Classificação, Sistólica Inferior, Sistólica Superior, Diastólica Inferior, Diastólica Superior -> {V,F,D}
 
 ta('Hipotensão', 0, 84, 0, 54).
-ta('Normal-baixa', 85, 119, 55, 75).
+ta('Normal-baixa', 85, 119, 55, 74).
 ta('Normal', 120, 129, 75, 85).
 ta('Normal-alta', 130, 139, 86, 89).
 ta('Hipertensão', 140, 200, 90, 150).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado historico: IdPaciente, Data, Diastolica, Sistolica, Classifcacao, Pulsacao -> {V,F,D}
 
+% Extensão do predicado classifica_tensão: Sistólica, Diastólica, Classificação -> {V,F,D}
 classifica_tensao(Sistolica, Diastolica, Classificacao) :-
     ta(Classificacao, SisInf, SisSup, DiaInf, DiaSup),
     Sistolica >= SisInf, Sistolica =< SisSup,
     Diastolica >= DiaInf, Diastolica =< DiaSup.
 
+% Extensão do predicado regista_consulta: IdConsulta, Data, IdPaciente, Diastólica, Sistólica, Pulsação -> {V,F,D}
 regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     data_valida(Data),
     assert(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     classifica_tensao(Sistolica, Diastolica, Classificacao),
     assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
 
-% Verifica se a data é válida (não pode ser futura)
+% Verificação da validade da data (não pode ser futura)
 data_valida(Dia-Mes-Ano) :-
     get_time(Agora),  % obtém a data e hora atuais
     stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _)),
-    (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % mesmo ano e mês, dia igual ou anterior
+    (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % ano anterior ao atual, ano atual + mês anterior ou atual, ano atual + mês atual + dia anterior ou atual
+
+% Extensão do predicado histórico: IdPaciente, Data, Diastólica, Sistólica, Classificação, Pulsação -> {V,F,D}
+% (Conhecimento positivo e negativo)
 
 % Paciente p1
 historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
+-historico(p1, 10-07-2025, 71, 114, 'Normal', 68).
 
 % Paciente p2
 historico(p2, 20-02-2025, 88, 138, 'Normal-alta', 78).
@@ -154,6 +177,7 @@ historico(p2, 10-03-2025, 92, 150, 'Hipertensão', 82).
 % Paciente p3
 historico(p3, 10-02-2025, 88, 134, 'Normal-alta', 78).
 historico(p3, 25-02-2025, 82, 126, 'Normal', 75).
+-historico(p3, 10-02-2025, 94, 140, 'Normal-alta', 76).
 
 % Paciente p4
 historico(p4, 26-02-2025, 94, 152, 'Hipertensão', 84).
@@ -164,6 +188,7 @@ historico(p5, 14-02-2025, 74, 118, 'Normal-baixa', 72).
 
 % Paciente p6
 historico(p6, 20-02-2025, 80, 120, 'Normal', 75).
+-historico(p6, 15-03-2025, 77, 121, 'Normal', 73).
 
 % Paciente p7
 historico(p7, 22-02-2025, 87, 133, 'Normal-alta', 70).
@@ -174,17 +199,19 @@ historico(p11, 24-03-2025, 89, 132, 'Normal-alta', 79).
 historico(p11, 10-04-2025, 87, 130, 'Normal', 77).
 
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
+
 % Paciente p8 -> Pressão diastólica desconhecida
 historico(p8, 14-10-2025, diastolica_des, 121, 'Normal', 76).
 excecao(historico(IdP, D, DIA, SIS, C, P)) :-
     historico(IdP, D, diastolica_des, SIS, C, P).
     
-% Paciente p9 -> A Pulsação é desconhecida
+% Paciente p9 -> A pulsação é desconhecida
 historico(p9, 14-03-2025, 69, 118, 'Normal-baixa', pulsacao_des).
 excecao(historico(IdP, D, DIA, SIS, C, P)) :-
     historico(IdP, D, DIA, SIS, C, pulsacao_des).
 
 % Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
+
 % Paciente p2 -> A pulsação do paciente é desconhecida, mas pertence a um intervalo de valores
 excecao(historico(p2, 05-02-2025, 90, 145, 'Hipertensão', X)):-
     X >= 77,
@@ -195,16 +222,18 @@ excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 70)).
 excecao(historico(p10, 02-03-2025, 70, 115, 'Normal-baixa', 75)).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
+
 % Paciente p4 -> Pulsação do paciente interdita
 historico(p4, 12-02-2025, 91, 140, 'Hipertensão', pulsacao_inter).
 excecao( historico(IdP, D, DIA, SIS, C, P)) :- 
      historico(IdP, D, DIA, SIS, C, pulsacao_inter).
 interdito(pulsacao_inter).
-+ historico(IdP, D, DIA, SIS, C, P) :: (findall((IdP, D, DIA, SIS, C, Ps),(historico(p4, 12-02-2025, 91, 140, 'Hipertensão', Ps).,nao(interdito(Ps))),S ),
++ historico(IdP, D, DIA, SIS, C, P) :: (findall((IdP, D, DIA, SIS, C, Ps),(historico(p4, 12-02-2025, 91, 140, 'Hipertensão', Ps), nao(interdito(Ps))), S),
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -     
-% Extensao do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
+% Extensão do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
+% (Conhecimento positivo e negativo)
 
 medicamento(p2, 'Captopril', '25mg/dia').
 medicamento(p3, 'Losartan', '50mg/dia').
@@ -213,28 +242,35 @@ medicamento(p5, 'Sem medicacao', '---').
 medicamento(p9, 'Hidroclorotiazida', '12.5mg/dia').
 medicamento(p11, 'Perindopril', '4mg/dia').
 
+-medicamento(p6, 'Captopril', '30 mg/dia').
+-medicamento(p3, 'Ramipril', '10mg/dia').
+-medicamento(p10, 'Perindopril', '15mg/dia').
+
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
-% Paciente7 ->O Medicamento é desconhecido
+
+% Paciente p7 -> O medicamento é desconhecido
 medicamento(p7, medic_desconhecido,'10mg/dia').
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, medic_desconhecido, D).
 
-% Paciente6 ->A Dosagem é desconhecida
+% Paciente p6 -> A Dosagem é desconhecida
 medicamento(p6, 'Enalapril', dose_desconhecida).
 excecao(medicamento(IdP, M, D)) :-
     medicamento(IdP, M, dose_desconhecida).
 
-% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - - 
-% Paciente1 -> O Medicamento tem duas possibilidades
+% Conhecimento Imperfeito Impreciso - - - - - - - - - - - - - - - - - -
+
+% Paciente p1 -> O medicamento tem duas possibilidades
 excecao(medicamento(p1, 'Ramipril', '10mg/dia')).
 excecao(medicamento(p1, 'Captopril', '10mg/dia')).
 
-% Paciente10 -> O Medicamento tem duas possibilidades
+% Paciente p10 -> O medicamento tem duas possibilidades
 excecao(medicamento(p10, 'Losartan', '50mg/dia')).
 excecao(medicamento(p10, 'Amlodipina', '5mg/dia')).
 
 % Conhecimento Imperfeito Interdito - - - - - - - - - - - - - - - - - - 
-% Paciente8 -> Medicamento e dosagem do paciente interditos
+
+% Paciente p8 -> Medicamento e dosagem do paciente interditos
 medicamento(p8, medic_interdito, dose_interdita).
 excecao(medicamento(IdP, M, D)) :- 
     medicamento(IdP, medic_interdito, dose_interdita).
@@ -244,12 +280,12 @@ interdito(dose_interdita).
                   length( S,N ), N == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado teste: lista -> {V,F}
+% Extensão do predicado teste: lista -> {V,F}
 teste([]).
 teste([H| T]):- H, teste(T).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado que permite a evolucao do conhecimento: Termo -> {V,F}
+% Extensão do predicado que permite a evolução do conhecimento: Termo -> {V,F}
 evolucao(Termo):-
     findall(Invariante, +Termo::Invariante, Lista),
     insercao(Termo),
@@ -259,7 +295,7 @@ insercao(Termo) :- assert(Termo).
 insercao(Termo) :- retract(Termo),!, fail.
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do predicado que permite a involucao do conhecimento: Termo -> {V,F}
+% Extensão do predicado que permite a involução do conhecimento: Termo -> {V,F}
 involucao(Termo):-
     findall(Invariante, -Termo::Invariante, Lista),
     remocao(Termo),
@@ -286,16 +322,28 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode ser registada uma consulta para um paciente inexistente
 +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
-% Não pode ser registado um historico para um paciente inexistente
+% Não pode ser registado um histórico para um paciente inexistente
 +historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
 % Não pode ser registado um medicamento para um paciente inexistente
-+medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+% +medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
+
+% Não pode ser registado um paciente cujas informações foram negadas explicitamente
+% +paciente(Id, N, D, I, S, M)::nao(-paciente(Id, N, D, I, S, M)).
+
+% Não pode ser registada uma consulta cujas informações foram negadas explicitamente
+% +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::nao(-consulta(IdC, D, IdP, Dia, Sis, Pul)).
+
+% Não pode ser registado um histórico cujas informações foram negadas explicitamente para um determinado paciente
+% +historico(IdP, Data, Dia, Sis, Clas, Pul)::nao(-historico(IdP, Data, Dia, Sis, Clas, Pul)).
+
+% Não pode ser registado um medicamento cujas informações foram negadas explicitamente para um determinado paciente
+% +medicamento(IdP, M, D)::nao(-medicamento(IdP, M, D)).
 
 % Não pode ser removido um paciente que tenha consultas associadas
 -paciente(Id, N, D, I, S, M)::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
 
-% Não pode ser removido um paciente que tenha hitoricos associados
+% Não pode ser removido um paciente que tenha históricos associados
 -paciente(Id, N, D, I, S, M)::(findall(Id, historico(Id,_, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um paciente que tenha medicação associada
@@ -304,14 +352,14 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode ser removida uma consulta se o paciente ainda existir
 -consulta(IdC, D, IdP, I, Dia, Sis, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
-% Não pode ser removido um historico se o paciente ainda existir
+% Não pode ser removido um histórico se o paciente ainda existir
 -historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % Não pode ser removido um medicamento se o paciente ainda existir
 -medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X == 0).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Transições de conhecimento: V->F, F->V ...
+% Transições de Conhecimento: V -> F, F -> V ...
 
 % Operador =.. -> univ -> converter um termo composto numa lista
 % Termo → Lista
@@ -321,19 +369,19 @@ remocao(Termo) :- assert(Termo),!, fail.
 
 % V -> F : torna falso algo que era verdadeiro
 v_para_f(Termo) :-
-    retract(Termo),              % Retira o Termo verdadeiro
-    assert(-Termo).              % Insere o falso
+    retract(Termo),     % Retira o termo verdadeiro
+    assert(-Termo).     % Insere o termo falso
 
 % F -> V : torna verdadeiro algo que era falso
 f_para_v(Termo) :-
-    retract(-Termo),             % Retira o falso
-    assert(Termo).               % Insere o verdadeiro
+    retract(-Termo),    % Retira o termo falso
+    assert(Termo).      % Insere o termo verdadeiro
     
 % V -> D : torna desconhecido algo que era verdadeiro
 v_para_d(Termo,P,ValorDesconhecido) :-
     Termo =.. [Pred | Args],
     substitui(P,Args,ValorDesconhecido,NovosArgs),
-    NovoTermo =.. [Pred | NovoArgs],
+    NovoTermo =.. [Pred | NovosArgs],
     retract(Termo),
     assert(excecao(NovoTermo)).
 
@@ -363,23 +411,24 @@ f_para_d(Termo,P,ValorDesconhecido) :-
     retract(-Termo),
     assert(excecao(NovoTermo)).
 
-substitui(1, [_|T], X, [X|T]).      % Se for na posição 1, substitui logo
-substitui(N, [H|T], X, [H|R]) :-    % Se for noutra posição...
+substitui(1, [_|T], X, [X|T]).      % Se a transição ocorrer na posição 1, substitui de imediato
+substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
     N > 1,
     N1 is N - 1,
-    substitui(N1, T, X, R).         % Retorna N1, a Tail, o Valor (desconhecido ou não) e o Resulado até N ser 1 e poder substituir na posição certa
+    substitui(N1, T, X, R).         % Retorna N1, a Tail, o Valor (desconhecido ou não) e o Resultado até N ser 1 e poder substituir na posição certa
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensao do meta-predicado nao: Questao -> {V,F}
+% Extensão do meta-predicado não: Questão -> {V,F}
 nao(Questao):- 
         Questao, !, fail.
 
 nao(Questao).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Sistema de inferencia
+% Sistemas de Inferência
 
-si(Questao,verdadeiro):- Questao.
+% Sistema de Inferência Clássico
+si(Questao, verdadeiro):- Questao.
 si(Questao, falso) :- -Questao.
 si(Questao, desconhecido):-
     nao(Questao),
@@ -387,7 +436,7 @@ si(Questao, desconhecido):-
 
 % Conjunção - - - - - - - - - - - - - - - - - - 
 
-% Valores da tabela de verdade da conjucao
+% Valores da tabela de verdade da Conjunção
 tabela_c(verdadeiro, verdadeiro, verdadeiro).
 tabela_c(verdadeiro, falso, falso).
 tabela_c(falso, verdadeiro, falso).
@@ -408,6 +457,7 @@ composicao_c(C1 e C2,C) :-
     %si_conjuncao2(Q2, R2),
     %conjuncao(R1, R2, R).
 
+% Sistema de Inferência Recursivo
 siR(Q1 e Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
@@ -416,38 +466,40 @@ siR(Q1 e Q2, CR,R) :-
 
 % Disjunção - - - - - - - - - - - - - - - - - - 
 
-% Valores da tabela de verdade da disjuncao
+% Valores da tabela de verdade da Disjunção
 tabela_d(verdadeiro, verdadeiro, verdadeiro).
-tabela_d(verdadeiro, falso,    verdadeiro).
-tabela_d(falso,    verdadeiro, verdadeiro).
-tabela_d(falso,    falso,      falso).
+tabela_d(verdadeiro, falso, verdadeiro).
+tabela_d(falso, verdadeiro, verdadeiro).
+tabela_d(falso, falso, falso).
 tabela_d(verdadeiro, desconhecido, verdadeiro).
-tabela_d(desconhecido, verdadeiro,  verdadeiro).
-tabela_d(falso,    desconhecido, desconhecido).
-tabela_d(desconhecido, falso,     desconhecido).
+tabela_d(desconhecido, verdadeiro, verdadeiro).
+tabela_d(falso, desconhecido, desconhecido).
+tabela_d(desconhecido, falso, desconhecido).
 tabela_d(desconhecido, desconhecido, desconhecido).
 
-%si_disjuncao2(Q1 ou Q2, R) :-
+% si_disjuncao2(Q1 ou Q2, R) :-
     %si_disjuncao2(Q1, R1),
     %si_disjuncao2(Q2, R2),
-    %dijuncao(R1, R2, R). 
+    %disjuncao(R1, R2, R). 
     
-dijuncao(C1, C2, (C1 ou C2)).
+disjuncao(C1, C2, (C1 ou C2)).
 
 composicao_d(C1 ou C2,C) :-
     tabela_d(C1,C2,C).
 
+% Sistema de Inferência Recursivo
 siR(Q1 ou Q2, CR,R) :-
     siR(Q1, CR1, R1),
     siR(Q2, CR2, R2),
     disjuncao(CR1, CR2, CR),
     composicao_d(CR, R).
 
-%siR(Q,R,R):- ????? TEMOS QUE VER SE É PRECISO
-    %si(Q,R).
+% Caso de Paragem -> Termina a recursão
+siR(Q,R,R) :- 
+    si(Q,R).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Relatar 
+% Relato de Informações Pertinentes
 
 % Paciente - - - - - - - - - - - - - - - - - - 
 
@@ -463,12 +515,12 @@ idPaciente(Id, R) :-
 sexoPaciente(S, R) :-
     findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
 
-% Extensão do predicado numeroPacientes: R -> {V,F}
+% Extensão do predicado númeroPacientes: R -> {V,F}
 numeroPacientes(R) :-
     findall(Id, paciente(Id, _, _, _, _, _), L),
     comprimento(L, R).
 
-% Extensão do predicado pacientesFaixaEtaria: Inf, Sup, R -> {V,F}
+% Extensão do predicado pacientesFaixaEtária: Inf, Sup, R -> {V,F}
 pacientesFaixaEtaria(Inf, Sup, R) :-
     findall(I, (consulta(_, _, _, I, _, _, _), I >= Inf, I =< Sup), L),
     comprimento(L, R).
@@ -487,27 +539,27 @@ idPacienteConsulta(IdP, R) :-
 dataConsulta(D, R) :-
     findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
 
-% Extensão do predicado numeroConsultas: R -> {V,F}
+% Extensão do predicado númeroConsultas: R -> {V,F}
 numeroConsultas(R) :-
     findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
     comprimento(L, R).
 
-% Historico - - - - - - - - - - - - - - - - - - 
+% Histórico - - - - - - - - - - - - - - - - - - 
 
-% Extensão do predicado historico_P: IdP, R -> {V,F}
+% Extensão do predicado histórico_P: IdP, R -> {V,F}
 historico_P(IdP, R) :-
     findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), R).
 
-% Extensão do predicado historico_Classificacao: C, R -> {V,F}
+% Extensão do predicado histórico_Classificação: C, R -> {V,F}
 historico_Classificacao(C, R) :-
-    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), R).
+    findall((IdP, Data, Dia, Sis, C, Pul), historico(IdP, Data, Dia, Sis, C, Pul), R).
 
-% Extensão do predicado historico_Data: R -> {V,F}
+% Extensão do predicado histórico_Data: R -> {V,F}
 historico_Data(Data,R) :-
     findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), L),
     comprimento(L, R).
 
-% Extensão do predicado numeroHistoricos: R -> {V,F}
+% Extensão do predicado númeroHistóricos: R -> {V,F}
 numeroHistoricos(N) :-
     findall((IdP, D), historico(IdP, D, _, _, _, _), L),
     length(L, N).
@@ -547,7 +599,7 @@ medicamentoPaciente(IdP, R) :-
 pacientesMedicamento(M, R) :-
     findall((IdP, M, D), medicamento(IdP, M, D), R).
 
-% Extensão do predicado numeroMedicados: R -> {V,F}
+% Extensão do predicado númeroMedicados: R -> {V,F}
 numeroMedicados(R) :-
     findall(IdP, medicamento(IdP, _, _), L),
     comprimento(L, R).
@@ -558,11 +610,10 @@ comprimento([_|T], R) :-
     comprimento(T, N),
     R is N + 1.
 
-
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
 
-% Estatísticas sobre os pacientes - - - - - - - - - - - - - - - - - - 
+% Estatísticas relativas a Pacientes - - - - - - - - - - - - - - - - - - 
 estatisticasPacientes :-
     numeroPacientes(NPac),
     numeroConsultas(NCons),
@@ -577,7 +628,7 @@ estatisticasPacientes :-
     nl, write('===== ESTATÍSTICAS DE PACIENTES ====='), nl, nl,
     write('Número total de pacientes: '), write(NPac), nl, nl,
     write('Número total de consultas: '), write(NCons), nl,
-    write('Número total de registos de histórico: '), write(NTA), nl,
+    write('Número total de registos de histórico: '), write(NHist), nl,
     write('Número total de pacientes medicados: '), write(NMed), nl, nl,
     write('Pacientes hipotensos: '), write(NumHipo), nl,
     write('Pacientes com tensão normal-baixa: '), write(NumNB), nl,
@@ -586,7 +637,7 @@ estatisticasPacientes :-
     write('Pacientes hipertensos: '), write(NumHip), nl, nl,
     write('====================================='), nl.
 
-% Estatísticas sobre medicamentos - - - - - - - - - - - - - - - - - - 
+% Estatísticas relativas a Medicamentos - - - - - - - - - - - - - - - - - - 
 estatisticasMedicamentos :-
     numeroMedicados(NMed),
     findall(M, medicamento(_, M, _), LMed),
@@ -598,23 +649,3 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
