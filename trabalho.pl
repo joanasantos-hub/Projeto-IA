@@ -5,16 +5,16 @@
 :- dynamic historico/6.
 :- dynamic medicamento/3.
 :- dynamic '-'/1.
-:- op( 900,xfy,'::' ).
+:- op(900,xfy,'::').
 :- op(500, xfy, e).
 :- op(500, xfy, ou).
 :- use_module(library(listing)).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % SICStus PROLOG: Declarações Iniciais
-:- set_prolog_flag( discontiguous_warnings,off ).
-:- set_prolog_flag( single_var_warnings,off ).
-:- set_prolog_flag( unknown,fail ).
+:- set_prolog_flag( unknown,error ).
+:- style_check(-singleton).
+:- style_check(-discontiguous).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensão do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
@@ -29,10 +29,9 @@ paciente(p8, 'Anabela Martins', 01-05-2005, 20, feminino, '22 Rua da Pedreira').
 paciente(p9, 'José Antunes', 11-07-2004, 21, masculino, '102 Rua dos Chãos').
 paciente(p11, 'Raquel Freitas', 13-07-2004, 21, feminino, '5 Rua do Poente').
 
--paciente(p22, 'Maria Machado', 01-01-1990, 35, feminino, '7 Rua da Alegria').
--paciente(p3, 'Joana Costa', 03-02-1995, 30, feminino, '15 Avenida da Liberdade').
--paciente(p14, 'Diogo Santos', 24-03-2000, 25, masculino, '45 Rua Cândido Oliveira').
--paciente(p8, 'Anabela Martins', 05-01-2005, 20, feminino, '22 Rua da Pedreira').
+-paciente(Id, N, D, I, S, M) :-
+    nao(paciente(Id, N, D, I, S, M)),
+    nao(excecao(paciente(Id, N, D, I, S, M))).
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -69,12 +68,10 @@ interdito(morada_interdita).
 
 % Paciente p1 -> O paciente realizou apenas uma consulta até ao momento
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
--consulta(c15, 11-03-2025, p1, 32, 74, 118, 72).
 
 % Paciente p2 -> O paciente realizou duas consultas até ao momento
 consulta(c12, 20-02-2025, p2, 23, 88, 138, 78).
 consulta(c22, 10-03-2025, p2, 23, 92, 150, 82).
--consulta(c22, 10-03-2025, p2, 28, 90, 144, 80).
 
 % Paciente p3
 consulta(c3, 10-02-2025, p3, 30, 88, 134, 78).
@@ -86,7 +83,6 @@ consulta(c23, 15-03-2025, p4, 47, 90, 142, 80).
 
 % Paciente p5
 consulta(c5, 14-02-2025, p5, 32, 74, 118, 72).
--consulta(c5, 28-02-2024, p5, 32, 74, 118, 72).
 
 % Paciente p6
 consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
@@ -94,11 +90,14 @@ consulta(c6, 20-02-2025, p6, 32, 80, 120, 75).
 % Paciente p7
 consulta(c7, 22-02-2025, p7, 35, 87, 133, 70).
 consulta(c17, 16-03-2025, p7, 35, 85, 129, 72).
--consulta(c26, 04-04-2025, p7, 33, 88, 130, 68).
 
 % Paciente p11
 consulta(c21, 24-03-2025, p11, 21, 89, 132, 79).
 consulta(c24, 10-04-2025, p11, 21, 87, 130, 77).
+
+-consulta(IdC, D, IdP, I, DIAST, S, P) :-
+    nao(consulta(IdC, D, IdP, I, DIAST, S, P)),
+    nao(excecao(consulta(IdC, D, IdP, I, DIAST, S, P))).
 
 % Conhecimento Imperfeito Incerto - - - - - - - - - - - - - - - - - -
 
@@ -168,7 +167,6 @@ data_valida(Dia-Mes-Ano) :-
 
 % Paciente p1
 historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
--historico(p1, 10-07-2025, 71, 114, 'Normal', 68).
 
 % Paciente p2
 historico(p2, 20-02-2025, 88, 138, 'Normal-alta', 78).
@@ -177,7 +175,6 @@ historico(p2, 10-03-2025, 92, 150, 'Hipertensão', 82).
 % Paciente p3
 historico(p3, 10-02-2025, 88, 134, 'Normal-alta', 78).
 historico(p3, 25-02-2025, 82, 126, 'Normal', 75).
--historico(p3, 10-02-2025, 94, 140, 'Normal-alta', 76).
 
 % Paciente p4
 historico(p4, 26-02-2025, 94, 152, 'Hipertensão', 84).
@@ -188,7 +185,6 @@ historico(p5, 14-02-2025, 74, 118, 'Normal-baixa', 72).
 
 % Paciente p6
 historico(p6, 20-02-2025, 80, 120, 'Normal', 75).
--historico(p6, 15-03-2025, 77, 121, 'Normal', 73).
 
 % Paciente p7
 historico(p7, 22-02-2025, 87, 133, 'Normal-alta', 70).
@@ -197,6 +193,10 @@ historico(p7, 16-03-2025, 85, 129, 'Normal', 72).
 % Paciente p11
 historico(p11, 24-03-2025, 89, 132, 'Normal-alta', 79).
 historico(p11, 10-04-2025, 87, 130, 'Normal', 77).
+
+-historico(IdP, D, DIA, SIS, C, P) :-
+    nao(historico(IdP, D, DIA, SIS, C, P)),
+    nao(excecao(historico(IdP, D, DIA, SIS, C, P))).
 
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -242,9 +242,9 @@ medicamento(p5, 'Sem medicacao', '---').
 medicamento(p9, 'Hidroclorotiazida', '12.5mg/dia').
 medicamento(p11, 'Perindopril', '4mg/dia').
 
--medicamento(p6, 'Captopril', '30 mg/dia').
--medicamento(p3, 'Ramipril', '10mg/dia').
--medicamento(p10, 'Perindopril', '15mg/dia').
+-medicamento(IdP, M, D) :-
+    nao(medicamento(IdP, M, D)),
+    nao(excecao(medicamento(IdP, M, D))).
 
 % Conhecimento Imperfeiro Incerto - - - - - - - - - - - - - - - - - - 
 
@@ -325,24 +325,6 @@ remocao(Termo) :- assert(Termo),!, fail.
 % Não pode ser registado um histórico para um paciente inexistente
 +historico(IdP, Data, Dia, Sis, Clas, Pul)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
 
-% Não pode ser registado um medicamento para um paciente inexistente
-% +medicamento(IdP, M, D)::(findall(IdP, paciente(IdP, _, _, _, _, _), L),length(L, X),X >= 1).
-
-% Não pode ser registado um paciente cujas informações foram negadas explicitamente
-% +paciente(Id, N, D, I, S, M)::nao(-paciente(Id, N, D, I, S, M)).
-
-% Não pode ser registada uma consulta cujas informações foram negadas explicitamente
-% +consulta(IdC, D, IdP, I, Dia, Sis, Pul)::nao(-consulta(IdC, D, IdP, Dia, Sis, Pul)).
-
-% Não pode ser registado um histórico cujas informações foram negadas explicitamente para um determinado paciente
-% +historico(IdP, Data, Dia, Sis, Clas, Pul)::nao(-historico(IdP, Data, Dia, Sis, Clas, Pul)).
-
-% Não pode ser registado um medicamento cujas informações foram negadas explicitamente para um determinado paciente
-% +medicamento(IdP, M, D)::nao(-medicamento(IdP, M, D)).
-
-% Não pode ser removido um paciente que tenha consultas associadas
--paciente(Id, N, D, I, S, M)::(findall(IdC, consulta(IdC, _, Id, _, _, _, _), L),length(L, X),X == 0).
-
 % Não pode ser removido um paciente que tenha históricos associados
 -paciente(Id, N, D, I, S, M)::(findall(Id, historico(Id,_, _, _, _, _), L),length(L, X),X == 0).
 
@@ -421,7 +403,6 @@ substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
 % Extensão do meta-predicado não: Questão -> {V,F}
 nao(Questao):- 
         Questao, !, fail.
-
 nao(Questao).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
