@@ -42,11 +42,18 @@ remocao(Termo) :- retract(Termo).
 remocao(Termo) :- assert(Termo),!, fail.
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensão do meta-predicado não: Questão -> {V,F}
+% Extensão do predicado não: Questão -> {V,F}
 nao(Questao):- 
         Questao, !, fail.
 nao(Questao).
 
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensão predicado comprimento: Lista,Resultado -> {V,F}
+comprimento([],0).
+comprimento([H|T], R):-
+    comprimento(T,X),
+    R is X + 1.
+    
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Sistema de Inferência
 
@@ -630,3 +637,4 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
