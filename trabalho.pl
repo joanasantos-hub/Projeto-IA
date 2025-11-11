@@ -156,10 +156,13 @@ regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     classifica_tensao(Sistolica, Diastolica, Classificacao),
     assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
 
-% Verificação da validade da data (não pode ser futura)
 data_valida(Dia-Mes-Ano) :-
-    get_time(Agora),  % obtém a data e hora atuais
-    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _)),
+    integer(Dia), integer(Mes), integer(Ano), %garante que sao numeros inteiros 
+    verifica_data(Dia, Mes, Ano).
+
+verifica_data(Dia, Mes, Ano) :-
+    get_time(Agora),%obtém a data e horas atuais
+    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _), 'UTC'),
     (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % ano anterior ao atual, ano atual + mês anterior ou atual, ano atual + mês atual + dia anterior ou atual
 
 % Extensão do predicado histórico: IdPaciente, Data, Diastólica, Sistólica, Classificação, Pulsação -> {V,F,D}
@@ -630,3 +633,4 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
