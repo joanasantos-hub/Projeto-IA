@@ -17,6 +17,111 @@
 :- style_check(-discontiguous).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensão do predicado teste: lista -> {V,F}
+teste([]).
+teste([H| T]):- H, teste(T).
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensão do predicado que permite a evolução do conhecimento: Termo -> {V,F}
+evolucao(Termo):-
+    findall(Invariante, +Termo::Invariante, Lista),
+    insercao(Termo),
+    teste(Lista).
+
+insercao(Termo) :- assert(Termo).
+insercao(Termo) :- retract(Termo),!, fail.
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensão do predicado que permite a involução do conhecimento: Termo -> {V,F}
+involucao(Termo):-
+    findall(Invariante, -Termo::Invariante, Lista),
+    remocao(Termo),
+    teste(Lista).
+
+remocao(Termo) :- retract(Termo).
+remocao(Termo) :- assert(Termo),!, fail.
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Extensão do meta-predicado não: Questão -> {V,F}
+nao(Questao):- 
+        Questao, !, fail.
+nao(Questao).
+
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
+% Sistema de Inferência
+
+% Sistema de Inferência Clássico
+si(Questao, verdadeiro):- Questao.
+si(Questao, falso) :- -Questao.
+si(Questao, desconhecido):-
+    nao(Questao),
+    nao(-Questao).
+
+% Conjunção - - - - - - - - - - - - - - - - - - 
+
+% Valores da tabela de verdade da Conjunção
+tabela_c(verdadeiro, verdadeiro, verdadeiro).
+tabela_c(verdadeiro, falso, falso).
+tabela_c(falso, verdadeiro, falso).
+tabela_c(falso, falso, falso).
+tabela_c(verdadeiro, desconhecido, desconhecido).
+tabela_c(desconhecido, verdadeiro, desconhecido).
+tabela_c(falso, desconhecido, falso).
+tabela_c(desconhecido, falso, falso).
+tabela_c(desconhecido, desconhecido, desconhecido).
+
+conjuncao(C1, C2, (C1 e C2)).
+
+composicao_c(C1 e C2,C) :-
+    tabela_c(C1,C2,C).
+
+%si_conjuncao2(Q1 e Q2, R) :-
+    %si_conjuncao2(Q1, R1),
+    %si_conjuncao2(Q2, R2),
+    %conjuncao(R1, R2, R).
+
+% Sistema de Inferência Recursivo
+siR(Q1 e Q2, CR,R) :-
+    siR(Q1, CR1, R1),
+    siR(Q2, CR2, R2),
+    conjuncao(CR1, CR2, CR),
+    composicao_c(CR, R).
+
+% Disjunção - - - - - - - - - - - - - - - - - - 
+
+% Valores da tabela de verdade da Disjunção
+tabela_d(verdadeiro, verdadeiro, verdadeiro).
+tabela_d(verdadeiro, falso, verdadeiro).
+tabela_d(falso, verdadeiro, verdadeiro).
+tabela_d(falso, falso, falso).
+tabela_d(verdadeiro, desconhecido, verdadeiro).
+tabela_d(desconhecido, verdadeiro, verdadeiro).
+tabela_d(falso, desconhecido, desconhecido).
+tabela_d(desconhecido, falso, desconhecido).
+tabela_d(desconhecido, desconhecido, desconhecido).
+
+% si_disjuncao2(Q1 ou Q2, R) :-
+    %si_disjuncao2(Q1, R1),
+    %si_disjuncao2(Q2, R2),
+    %disjuncao(R1, R2, R). 
+    
+disjuncao(C1, C2, (C1 ou C2)).
+
+composicao_d(C1 ou C2,C) :-
+    tabela_d(C1,C2,C).
+
+% Sistema de Inferência Recursivo
+siR(Q1 ou Q2, CR,R) :-
+    siR(Q1, CR1, R1),
+    siR(Q2, CR2, R2),
+    disjuncao(CR1, CR2, CR),
+    composicao_d(CR, R).
+
+% Caso de Paragem -> Termina a recursão
+siR(Q,R,R) :- 
+    si(Q,R).
+    
+% -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensão do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
 % (Conhecimento positivo e negativo)
 
@@ -64,12 +169,11 @@ interdito(morada_interdita).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensão do predicado consulta: IdConsulta, Data, IdPaciente, Idade, Diastólica, Sistólica, Pulsação -> {V,F,D}
-% (Conhecimento positivo e negativo)
 
-% Paciente p1 -> O paciente realizou apenas uma consulta até ao momento
+% Paciente p1
 consulta(c1, 02-02-2025, p1, 38, 70, 115, 70).
 
-% Paciente p2 -> O paciente realizou duas consultas até ao momento
+% Paciente p2
 consulta(c12, 20-02-2025, p2, 23, 88, 138, 78).
 consulta(c22, 10-03-2025, p2, 23, 92, 150, 82).
 
@@ -142,7 +246,6 @@ ta('Normal-alta', 130, 139, 86, 89).
 ta('Hipertensão', 140, 200, 90, 150).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
-
 % Extensão do predicado classifica_tensão: Sistólica, Diastólica, Classificação -> {V,F,D}
 classifica_tensao(Sistolica, Diastolica, Classificacao) :-
     ta(Classificacao, SisInf, SisSup, DiaInf, DiaSup),
@@ -157,16 +260,16 @@ regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
 
 data_valida(Dia-Mes-Ano) :-
-    integer(Dia), integer(Mes), integer(Ano), %garante que sao numeros inteiros 
+    integer(Dia), integer(Mes), integer(Ano),                                            % Garante que sao números inteiros 
     verifica_data(Dia, Mes, Ano).
 
 verifica_data(Dia, Mes, Ano) :-
-    get_time(Agora),%obtém a data e horas atuais
-    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _), 'UTC'), %UTC-padrão de tempo global que não muda com fusos horários
-    (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % ano anterior ao atual, ano atual + mês anterior ou atual, ano atual + mês atual + dia anterior ou atual
+    get_time(Agora),                                                                     % Obtém a data e horas atuais
+    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _), 'UTC'),          % UTC-padrão de tempo global que não muda com fusos horários
+    (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % Ano anterior ao atual, ano atual + mês anterior ou atual, ano atual + mês atual + dia anterior ou atual
+    
 
 % Extensão do predicado histórico: IdPaciente, Data, Diastólica, Sistólica, Classificação, Pulsação -> {V,F,D}
-% (Conhecimento positivo e negativo)
 
 % Paciente p1
 historico(p1, 02-02-2025, 70, 115, 'Normal-baixa', 70).
@@ -236,7 +339,6 @@ interdito(pulsacao_inter).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -     
 % Extensão do predicado medicamento: IdP, Medicamento, Dosagem -> {V,F,D}
-% (Conhecimento positivo e negativo)
 
 medicamento(p2, 'Captopril', '25mg/dia').
 medicamento(p3, 'Losartan', '50mg/dia').
@@ -281,31 +383,6 @@ interdito(medic_interdito).
 interdito(dose_interdita).
 +medicamento(IdP, M, D) :: (findall( (IdP, Ms, Ds),(medicamento(p8, Ms, Ds),nao(interdito(Ms)),nao(interdito(Ds))),S ),
                   length( S,N ), N == 0).
-
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensão do predicado teste: lista -> {V,F}
-teste([]).
-teste([H| T]):- H, teste(T).
-
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensão do predicado que permite a evolução do conhecimento: Termo -> {V,F}
-evolucao(Termo):-
-    findall(Invariante, +Termo::Invariante, Lista),
-    insercao(Termo),
-    teste(Lista).
-
-insercao(Termo) :- assert(Termo).
-insercao(Termo) :- retract(Termo),!, fail.
-
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensão do predicado que permite a involução do conhecimento: Termo -> {V,F}
-involucao(Termo):-
-    findall(Invariante, -Termo::Invariante, Lista),
-    remocao(Termo),
-    teste(Lista).
-
-remocao(Termo) :- retract(Termo).
-remocao(Termo) :- assert(Termo),!, fail.
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Invariantes
@@ -354,13 +431,13 @@ remocao(Termo) :- assert(Termo),!, fail.
 
 % V -> F : torna falso algo que era verdadeiro
 v_para_f(Termo) :-
-    retract(Termo),     % Retira o termo verdadeiro
-    assert(-Termo).     % Insere o termo falso
+    retract(Termo),
+    assert(-Termo).
 
 % F -> V : torna verdadeiro algo que era falso
 f_para_v(Termo) :-
-    retract(-Termo),    % Retira o termo falso
-    assert(Termo).      % Insere o termo verdadeiro
+    retract(-Termo),
+    assert(Termo).
     
 % V -> D : torna desconhecido algo que era verdadeiro
 v_para_d(Termo,P,ValorDesconhecido) :-
@@ -401,86 +478,6 @@ substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
     N > 1,
     N1 is N - 1,
     substitui(N1, T, X, R).         % Retorna N1, a Tail, o Valor (desconhecido ou não) e o Resultado até N ser 1 e poder substituir na posição certa
-
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Extensão do meta-predicado não: Questão -> {V,F}
-nao(Questao):- 
-        Questao, !, fail.
-nao(Questao).
-
-% -------------------------------- - - - - - - - - - -  -  -  -  -   -
-% Sistemas de Inferência
-
-% Sistema de Inferência Clássico
-si(Questao, verdadeiro):- Questao.
-si(Questao, falso) :- -Questao.
-si(Questao, desconhecido):-
-    nao(Questao),
-    nao(-Questao).
-
-% Conjunção - - - - - - - - - - - - - - - - - - 
-
-% Valores da tabela de verdade da Conjunção
-tabela_c(verdadeiro, verdadeiro, verdadeiro).
-tabela_c(verdadeiro, falso, falso).
-tabela_c(falso, verdadeiro, falso).
-tabela_c(falso, falso, falso).
-tabela_c(verdadeiro, desconhecido, desconhecido).
-tabela_c(desconhecido, verdadeiro, desconhecido).
-tabela_c(falso, desconhecido, falso).
-tabela_c(desconhecido, falso, falso).
-tabela_c(desconhecido, desconhecido, desconhecido).
-
-conjuncao(C1, C2, (C1 e C2)).
-
-composicao_c(C1 e C2,C) :-
-    tabela_c(C1,C2,C).
-
-%si_conjuncao2(Q1 e Q2, R) :-
-    %si_conjuncao2(Q1, R1),
-    %si_conjuncao2(Q2, R2),
-    %conjuncao(R1, R2, R).
-
-% Sistema de Inferência Recursivo
-siR(Q1 e Q2, CR,R) :-
-    siR(Q1, CR1, R1),
-    siR(Q2, CR2, R2),
-    conjuncao(CR1, CR2, CR),
-    composicao_c(CR, R).
-
-% Disjunção - - - - - - - - - - - - - - - - - - 
-
-% Valores da tabela de verdade da Disjunção
-tabela_d(verdadeiro, verdadeiro, verdadeiro).
-tabela_d(verdadeiro, falso, verdadeiro).
-tabela_d(falso, verdadeiro, verdadeiro).
-tabela_d(falso, falso, falso).
-tabela_d(verdadeiro, desconhecido, verdadeiro).
-tabela_d(desconhecido, verdadeiro, verdadeiro).
-tabela_d(falso, desconhecido, desconhecido).
-tabela_d(desconhecido, falso, desconhecido).
-tabela_d(desconhecido, desconhecido, desconhecido).
-
-% si_disjuncao2(Q1 ou Q2, R) :-
-    %si_disjuncao2(Q1, R1),
-    %si_disjuncao2(Q2, R2),
-    %disjuncao(R1, R2, R). 
-    
-disjuncao(C1, C2, (C1 ou C2)).
-
-composicao_d(C1 ou C2,C) :-
-    tabela_d(C1,C2,C).
-
-% Sistema de Inferência Recursivo
-siR(Q1 ou Q2, CR,R) :-
-    siR(Q1, CR1, R1),
-    siR(Q2, CR2, R2),
-    disjuncao(CR1, CR2, CR),
-    composicao_d(CR, R).
-
-% Caso de Paragem -> Termina a recursão
-siR(Q,R,R) :- 
-    si(Q,R).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Relato de Informações Pertinentes
@@ -633,5 +630,3 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
-
-
