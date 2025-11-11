@@ -162,7 +162,7 @@ data_valida(Dia-Mes-Ano) :-
 
 verifica_data(Dia, Mes, Ano) :-
     get_time(Agora),%obtém a data e horas atuais
-    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _), 'UTC'),
+    stamp_date_time(Agora, date(AnoAt, MesAt, DiaAt, _, _, _, _, _, _), 'UTC'), %UTC-padrão de tempo global que não muda com fusos horários
     (Ano < AnoAt; Ano == AnoAt, Mes < MesAt; Ano == AnoAt, Mes == MesAt, Dia =< DiaAt).  % ano anterior ao atual, ano atual + mês anterior ou atual, ano atual + mês atual + dia anterior ou atual
 
 % Extensão do predicado histórico: IdPaciente, Data, Diastólica, Sistólica, Classificação, Pulsação -> {V,F,D}
@@ -633,4 +633,5 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
