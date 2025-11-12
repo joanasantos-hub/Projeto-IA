@@ -4,6 +4,7 @@
 :- dynamic ta/5.
 :- dynamic historico/6.
 :- dynamic medicamento/3.
+:- dynamic excecao/1.
 :- dynamic '-'/1.
 :- op(900,xfy,'::').
 :- op(500, xfy, e).
@@ -592,12 +593,6 @@ numeroMedicados(R) :-
     findall(IdP, medicamento(IdP, _, _), L),
     comprimento(L, R).
 
-% Predicado auxiliar - - - - - - - - - - - - - - - - - - 
-comprimento([], 0).
-comprimento([_|T], R) :-
-    comprimento(T, N),
-    R is N + 1.
-
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Estatísticas gerais
 
@@ -637,4 +632,5 @@ estatisticasMedicamentos :-
     write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
