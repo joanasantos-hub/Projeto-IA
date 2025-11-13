@@ -263,8 +263,8 @@ classifica_tensao(Sistolica, Diastolica, Classificacao) :-
 % Extensão do predicado regista_consulta: IdConsulta, Data, IdPaciente, Diastólica, Sistólica, Pulsação -> {V,F,D}
 regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     data_valida(Data),
-    evolucao(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     classifica_tensao(Sistolica, Diastolica, Classificacao),
+    evolucao(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     evolucao(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
 
 data_valida(Dia-Mes-Ano) :-
@@ -653,4 +653,5 @@ estatisticasMedicamentos :-
     write('Numero de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
