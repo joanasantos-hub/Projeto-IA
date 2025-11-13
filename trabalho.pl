@@ -10,6 +10,7 @@
 :- op(500, xfy, e).
 :- op(500, xfy, ou).
 :- use_module(library(listing)).
+:- encoding(utf8).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % SICStus PROLOG: Declarações Iniciais
@@ -131,7 +132,6 @@ siR(Q,R,R) :-
     
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
 % Extensão do predicado paciente: IdPaciente, Nome, Data de Nascimento, Idade, Sexo, Morada -> {V,F,D}
-% (Conhecimento positivo e negativo)
 
 paciente(p1, 'Ana Martins', 15-09-1987, 38, feminino, '23 Avenida Central').
 paciente(p2, 'Carlos Pereira', 27-11-2001, 23, masculino, '12 Rua das Flores').
@@ -263,9 +263,9 @@ classifica_tensao(Sistolica, Diastolica, Classificacao) :-
 % Extensão do predicado regista_consulta: IdConsulta, Data, IdPaciente, Diastólica, Sistólica, Pulsação -> {V,F,D}
 regista_consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao) :-
     data_valida(Data),
-    assert(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
+    evolucao(consulta(IdC, Data, IdP, Idade, Diastolica, Sistolica, Pulsacao)),
     classifica_tensao(Sistolica, Diastolica, Classificacao),
-    assert(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
+    evolucao(historico(IdP, Data, Diastolica, Sistolica, Classificacao, Pulsacao)).
 
 data_valida(Dia-Mes-Ano) :-
     integer(Dia), integer(Mes), integer(Ano),                                            % Garante que sao números inteiros 
@@ -440,12 +440,12 @@ interdito(dose_interdita).
 % V -> F : torna falso algo que era verdadeiro
 v_para_f(Termo) :-
     retract(Termo),
-    assert(-Termo).
+    evolucao(-Termo).
 
 % F -> V : torna verdadeiro algo que era falso
 f_para_v(Termo) :-
     retract(-Termo),
-    assert(Termo).
+    evolucao(Termo).
     
 % V -> D : torna desconhecido algo que era verdadeiro
 v_para_d(Termo,P,ValorDesconhecido) :-
@@ -453,7 +453,7 @@ v_para_d(Termo,P,ValorDesconhecido) :-
     substitui(P,Args,ValorDesconhecido,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(Termo),
-    assert(excecao(NovoTermo)).
+    evolucao(excecao(NovoTermo)).
 
 % D -> V : torna verdadeiro algo que era desconhecido
 d_para_v(Excecao,P,Valor) :-
@@ -462,7 +462,7 @@ d_para_v(Excecao,P,Valor) :-
     substitui(P,Args,Valor,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(Excecao),
-    assert(NovoTermo).
+    evolucao(NovoTermo).
 
 % D -> F : torna falso algo que era desconhecido
 d_para_f(Excecao,P,Valor) :-
@@ -471,7 +471,7 @@ d_para_f(Excecao,P,Valor) :-
     substitui(P,Args,Valor,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(Excecao),
-    assert(-NovoTermo).
+    evolucao(-NovoTermo).
 
 % F -> D : torna desconhecido algo que era falso
 f_para_d(Termo,P,ValorDesconhecido) :-
@@ -479,7 +479,7 @@ f_para_d(Termo,P,ValorDesconhecido) :-
     substitui(P,Args,ValorDesconhecido,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(-Termo),
-    assert(excecao(NovoTermo)).
+    evolucao(excecao(NovoTermo)).
 
 substitui(1, [_|T], X, [X|T]).      % Se a transição ocorrer na posição 1, substitui de imediato
 substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
@@ -494,103 +494,124 @@ substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
 
 % Extensão do predicado nomePaciente: N, R -> {V,F}
 nomePaciente(N, R) :-
-    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+    findall((Id, N, D, I, S, M), (paciente(Id, N, D, I, S, M);
+                                excecao(paciente(Id, N, D, I, S, M))),R).
 
 % Extensão do predicado idPaciente: Id, R -> {V,F}
 idPaciente(Id, R) :-
-    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+    findall((Id, N, D, I, S, M), (paciente(Id, N, D, I, S, M);
+                                excecao(paciente(Id, N, D, I, S, M))),R).
 
 % Extensão do predicado sexoPaciente: S, R -> {V,F}
 sexoPaciente(S, R) :-
-    findall((Id, N, D, I, S, M), paciente(Id, N, D, I, S, M), R).
+    findall((Id, N, D, I, S, M),(paciente(Id, N, D, I, S, M);
+                                excecao(paciente(Id, N, D, I, S, M))),R).
 
 % Extensão do predicado númeroPacientes: R -> {V,F}
 numeroPacientes(R) :-
-    findall(Id, paciente(Id, _, _, _, _, _), L),
+    findall(Id,(paciente(Id, _, _, _, _, _);
+                excecao(paciente(Id, _, _, _, _, _))),L),
     comprimento(L, R).
 
 % Extensão do predicado pacientesFaixaEtária: Inf, Sup, R -> {V,F}
 pacientesFaixaEtaria(Inf, Sup, R) :-
-    findall(I, (consulta(_, _, _, I, _, _, _), I >= Inf, I =< Sup), L),
+    findall(IdP,((consulta(_, _, IdP, I, _, _, _), I >= Inf, I =< Sup);
+                (excecao(consulta(_, _, IdP, I2, _, _, _)), I2 >= Inf, I2 =< Sup)),L),
     comprimento(L, R).
 
 % Consulta - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado idConsulta: IdC, R -> {V,F}
 idConsulta(IdC, R) :-
-    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), (consulta(IdC, D, IdP, I, Dia, Sis, Pul);
+                                            excecao(consulta(IdC, D, IdP, I, Dia, Sis, Pul))),R).
 
 % Extensão do predicado idPacienteConsulta: IdP, R -> {V,F}
 idPacienteConsulta(IdP, R) :-
-    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), (consulta(IdC, D, IdP, I, Dia, Sis, Pul);
+                                            excecao(consulta(IdC, D, IdP, I, Dia, Sis, Pul))),R).
 
 % Extensão do predicado dataConsulta: D, R -> {V,F}
 dataConsulta(D, R) :-
-    findall((IdC, D, IdP, I, Dia, Sis, Pul), consulta(IdC, D, IdP, I, Dia, Sis, Pul), R).
+    findall((IdC, D, IdP, I, Dia, Sis, Pul), (consulta(IdC, D, IdP, I, Dia, Sis, Pul);
+                                            excecao(consulta(IdC, D, IdP, I, Dia, Sis, Pul))),R).
 
 % Extensão do predicado númeroConsultas: R -> {V,F}
 numeroConsultas(R) :-
-    findall(IdC, consulta(IdC, _, _, _, _, _, _), L),
+    findall(IdC, (consulta(IdC, _, _, _, _, _, _);
+                excecao(consulta(IdC, _, _, _, _, _, _))),L),
     comprimento(L, R).
 
 % Histórico - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado histórico_P: IdP, R -> {V,F}
 historico_P(IdP, R) :-
-    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), R).
+    findall((IdP, Data, Dia, Sis, Clas, Pul), (historico(IdP, Data, Dia, Sis, Clas, Pul);
+                                            excecao(historico(IdP, Data, Dia, Sis, Clas, Pul))),R).
 
 % Extensão do predicado histórico_Classificação: C, R -> {V,F}
 historico_Classificacao(C, R) :-
-    findall((IdP, Data, Dia, Sis, C, Pul), historico(IdP, Data, Dia, Sis, C, Pul), R).
+    findall((IdP, Data, Dia, Sis, C, Pul), (historico(IdP, Data, Dia, Sis, C, Pul);
+                                            excecao(historico(IdP, Data, Dia, Sis, C, Pul))),L),
+    sort(L, R).
 
 % Extensão do predicado histórico_Data: R -> {V,F}
-historico_Data(Data,R) :-
-    findall((IdP, Data, Dia, Sis, Clas, Pul), historico(IdP, Data, Dia, Sis, Clas, Pul), L),
-    comprimento(L, R).
+historico_Data(Data, R) :-
+    findall((IdP, Data, Dia, Sis, Clas, Pul), (historico(IdP, Data, Dia, Sis, Clas, Pul);
+                                                excecao(historico(IdP, Data, Dia, Sis, Clas, Pul))),R).
 
 % Extensão do predicado númeroHistóricos: R -> {V,F}
 numeroHistoricos(N) :-
-    findall((IdP, D), historico(IdP, D, _, _, _, _), L),
+    findall((IdP, D), (historico(IdP, D, _, _, _, _);
+                    excecao(historico(IdP, D, _, _, _, _))),L),
     length(L, N).
-    
+
 % Extensão do predicado pacientesHipotensos: R -> {V,F}
 pacientesHipotensos(R) :-
-    findall(IdP, historico(IdP, _, _, _, 'Hipotensão', _), L),
+    findall(IdP, (historico(IdP, _, _, _, 'Hipotensão', _);
+                excecao(historico(IdP, _, _, _, 'Hipotensão', _))),L),
     sort(L, R).
 
 % Extensão do predicado pacientesNormalBaixa: R -> {V,F}
 pacientesNormalBaixa(R) :-
-    findall(IdP, historico(IdP, _, _, _, 'Normal-baixa', _), L),
+    findall(IdP, (historico(IdP, _, _, _, 'Normal-baixa', _);
+                excecao(historico(IdP, _, _, _, 'Normal-baixa', _))),L),
     sort(L, R).
-    
+
 % Extensão do predicado pacientesNormais: R -> {V,F}
 pacientesNormais(R) :-
-    findall(IdP, historico(IdP, _, _, _, 'Normal', _), L),
+    findall(IdP, (historico(IdP, _, _, _, 'Normal', _);
+                excecao(historico(IdP, _, _, _, 'Normal', _))),L),
     sort(L, R).
-    
+
 % Extensão do predicado pacientesNormalAlta: R -> {V,F}
 pacientesNormalAlta(R) :-
-    findall(IdP, historico(IdP, _, _, _, 'Normal-alta', _), L),
+    findall(IdP, (historico(IdP, _, _, _, 'Normal-alta', _);
+                excecao(historico(IdP, _, _, _, 'Normal-alta', _))),L),
     sort(L, R).
-    
+
 % Extensão do predicado pacientesHipertensos: R -> {V,F}
 pacientesHipertensos(R) :-
-    findall(IdP, historico(IdP, _, _, _, 'Hipertensão', _), L),
+    findall(IdP, (historico(IdP, _, _, _, 'Hipertensão', _);
+                excecao(historico(IdP, _, _, _, 'Hipertensão', _))),L),
     sort(L, R).
 
 % Medicamento - - - - - - - - - - - - - - - - - - 
 
 % Extensão do predicado medicamentoPaciente: IdP, R -> {V,F}
 medicamentoPaciente(IdP, R) :-
-    findall((IdP, M, D), medicamento(IdP, M, D), R).
+    findall((IdP, M, D), (medicamento(IdP, M, D);
+                        excecao(medicamento(IdP, M, D))),R).
 
 % Extensão do predicado pacientesMedicamento: M, R -> {V,F}
 pacientesMedicamento(M, R) :-
-    findall((IdP, M, D), medicamento(IdP, M, D), R).
+    findall((IdP, M, D), (medicamento(IdP, M, D);
+                        excecao(medicamento(IdP, M, D))),R).
 
 % Extensão do predicado númeroMedicados: R -> {V,F}
 numeroMedicados(R) :-
-    findall(IdP, medicamento(IdP, _, _), L),
+    findall(IdP, (medicamento(IdP, _, _);
+                excecao(medicamento(IdP, _, _))),L),
     comprimento(L, R).
 
 % -------------------------------- - - - - - - - - - -  -  -  -  -   -
@@ -609,14 +630,14 @@ estatisticasPacientes :-
     pacientesHipertensos(Hip), comprimento(Hip, NumHip),
 
     nl, write('===== ESTATÍSTICAS DE PACIENTES ====='), nl, nl,
-    write('Número total de pacientes: '), write(NPac), nl, nl,
-    write('Número total de consultas: '), write(NCons), nl,
-    write('Número total de registos de histórico: '), write(NHist), nl,
-    write('Número total de pacientes medicados: '), write(NMed), nl, nl,
+    write('Numero total de pacientes: '), write(NPac), nl, nl,
+    write('Numero total de consultas: '), write(NCons), nl,
+    write('Numero total de registos de historico: '), write(NHist), nl,
+    write('Numero total de pacientes medicados: '), write(NMed), nl, nl,
     write('Pacientes hipotensos: '), write(NumHipo), nl,
-    write('Pacientes com tensão normal-baixa: '), write(NumNB), nl,
-    write('Pacientes com tensão normal: '), write(NumNorm), nl,
-    write('Pacientes com tensão normal-alta: '), write(NumNA), nl,
+    write('Pacientes com tensao normal-baixa: '), write(NumNB), nl,
+    write('Pacientes com tensao normal: '), write(NumNorm), nl,
+    write('Pacientes com tensao normal-alta: '), write(NumNA), nl,
     write('Pacientes hipertensos: '), write(NumHip), nl, nl,
     write('====================================='), nl.
 
@@ -628,9 +649,7 @@ estatisticasMedicamentos :-
     comprimento(MedsUnicos, NumMeds),
 
     nl, write('===== ESTATÍSTICAS DE MEDICAÇÃO ====='), nl, nl,
-    write('Número total de pacientes medicados: '), write(NMed), nl,
-    write('Número de medicamentos diferentes prescritos: '), write(NumMeds), nl,
+    write('Numero total de pacientes medicados: '), write(NMed), nl,
+    write('Numero de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
-
-
