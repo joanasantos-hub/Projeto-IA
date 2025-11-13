@@ -453,7 +453,7 @@ v_para_d(Termo,P,ValorDesconhecido) :-
     substitui(P,Args,ValorDesconhecido,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(Termo),
-    evolucao(NovoTermo).
+    evolucao(excecao(NovoTermo)).
 
 % D -> V : torna verdadeiro algo que era desconhecido
 d_para_v(Excecao,P,Valor) :-
@@ -479,7 +479,7 @@ f_para_d(Termo,P,ValorDesconhecido) :-
     substitui(P,Args,ValorDesconhecido,NovosArgs),
     NovoTermo =.. [Pred | NovosArgs],
     retract(-Termo),
-    evolucao(NovoTermo).
+    evolucao(excecao(NovoTermo)).
 
 substitui(1, [_|T], X, [X|T]).      % Se a transição ocorrer na posição 1, substitui de imediato
 substitui(N, [H|T], X, [H|R]) :-    % Se ocorrer noutra posição...
@@ -653,5 +653,6 @@ estatisticasMedicamentos :-
     write('Numero de medicamentos diferentes prescritos: '), write(NumMeds), nl,
     write('Lista de medicamentos prescritos: '), write(MedsUnicos), nl, nl,
     write('====================================='), nl.
+
 
 
